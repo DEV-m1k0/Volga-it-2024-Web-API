@@ -43,6 +43,10 @@ INSTALLED_APPS = [
 
     # Мои микросервисы
     'api',
+    'account',
+    'hospital',
+    'time_table',
+    'document'
 ]
 
 MIDDLEWARE = [
