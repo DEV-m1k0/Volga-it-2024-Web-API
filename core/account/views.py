@@ -43,7 +43,7 @@ class MyUserAPIView(APIView):
     и создания новых аккаунтов
     """
 
-    # permission_classes = [permissions.IsAdminUser,]
+    permission_classes = [permissions.IsAdminUser,]
 
     def get(self, request: HttpRequest):
         # (GET) - рендерим запрос
