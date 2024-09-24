@@ -42,27 +42,37 @@ def add_many_users(data: list[MyUser]):
 
 
 def add_one_user(validated_data: dict):
-    response = {}
+    try:
+        response = {}
 
-    user = MyUser()
+        user = MyUser()
 
-    user.lastName = validated_data['lastName']
-    user.firstName = validated_data['firstName']
-    user.username = validated_data['username']
-    user.set_password(make_password(validated_data['password']))
+        user.lastName = validated_data['lastName']
+        user.firstName = validated_data['firstName']
+        user.username = validated_data['username']
+        user.set_password(make_password(validated_data['password']))
 
-    user.save()
-
-    if validated_data['roles']:
-        response_from_roles = add_role(user, validated_data)
-
+        user.save()
+    
         response[f"{user}"] = "Пользователь успешно добавлен"
 
-        if response_from_roles:
-            response["messages"] = response_from_roles
+        try:
+            if validated_data['roles']:
+                response_from_roles = add_role(user, validated_data)
+
+                if response_from_roles:
+                    response["messages"] = response_from_roles
+
+        except:
+            pass
+        
+        return response
+
+    except:
+        return {"server": f"{user.username} не был добавлен"}
         
 
-    return response
+    
     
 
 

@@ -8,13 +8,11 @@ from account.models import MyUser
 
 
 def add_account(request: HttpRequest):
-
-    data = request.data
-
     try:
         user = MyUser
 
-        user.lastName = request
+        user.lastName = request.data['lastName']
+        # user.
 
         return Response(data={
                 "server": "Данные пришли"
