@@ -119,12 +119,3 @@ class MyUserAPIView(APIView):
         # формирование ответа
         response = add_users(request=request)
         return response
-    
-
-
-
-# SECTION Обработка авторизации в систему
-
-
-
-
