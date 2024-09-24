@@ -1,0 +1,31 @@
+[
+    {
+        "model": "account.Role",
+        "pk": "1",
+        "fields": {
+            "role": "Admin"
+        }
+    },
+    {
+        "model": "account.Role",
+        "pk": "2",
+        "fields": {
+            "role": "Manager"
+        }
+    },
+    {
+        "model": "account.Role",
+        "pk": "3",
+        "fields": {
+            "role": "Doctor"
+        }
+    },
+    {
+        "model": "account.Role",
+        "pk": "4",
+        "fields": {
+            "role": "User"
+        }
+    }
+]
+    
