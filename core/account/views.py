@@ -1,11 +1,11 @@
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework import status, permissions
 from rest_framework.response import Response
+from rest_framework.request import Request
 from django.http import HttpRequest
 from .models import MyUser
-from .serializers import MyUserSerializer
-from .logic.users import add_users
+from .logic.users import add_users, delete
+from .logic.update import update_user
 
 
 
@@ -17,7 +17,7 @@ from .logic.users import add_users
 
 # NOTE Класс для обработки DELETE и PUT запросов для аккаунтов
 # LINK /api/Accounts/{id}/
-class MyUserViewSet(ModelViewSet):
+class MyUserIdAPIView(APIView):
     """
     ### Класс наследованный от ModelViewSet
     <p>Реализован для добавления такого функционала, как:</p>
@@ -29,14 +29,26 @@ class MyUserViewSet(ModelViewSet):
     """
 
     permission_classes = [permissions.IsAdminUser, ]
-    queryset = MyUser.objects.all()
-    serializer_class = MyUserSerializer
+
+    def put(self, request: HttpRequest, id: int):
+
+        response = update_user(request=request, id=id)
+
+        return response
+    
+
+    def delete(self, request: HttpRequest, id: int):
+
+        response = delete(request=request, id=id)
+
+        return response
 
 
 
 # NOTE класс для обработки GET и POST запросов для аккаунтов
 # LINK /api/Accounts/
 class MyUserAPIView(APIView):
+
     """
     #### Класс представления от APIView
     для вывода количества всех пользователей
@@ -122,9 +134,30 @@ class MyUserAPIView(APIView):
     
 
 
+# NOTE класс для обработки GET запрос для аккаунта
+# LINK /api/Accounts/Me/
+class MyUserMeAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
 
-# SECTION Обработка авторизации в систему
+    def get(self, request: HttpRequest):
+        user: MyUser = request.user
 
+        role_list = []
 
+        for role in user.roles.all():
+            role_list.append(role.role)
 
+        return Response({
+            "lastName": str(user.lastName),
+            "firstName": str(user.firstName),
+            "username": str(user.username),
+            "roles": role_list
+            })
+    
 
+class UpdateMeAPIView(APIView):
+    def put(self, request: Request):
+
+        response = update_user(request)
+
+        return response

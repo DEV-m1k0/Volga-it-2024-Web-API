@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your models here.
 
@@ -32,3 +33,12 @@ class MyUser(AbstractUser):
 
     def __str__(self) -> str:
         return str(self.username)
+    
+
+    @property
+    def access_token(self) -> str:
+        return str(RefreshToken.for_user(self).access_token)
+    
+    @property
+    def refresh_token(self) -> str:
+        return str(RefreshToken.for_user(self))

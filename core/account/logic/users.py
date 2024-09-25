@@ -2,7 +2,6 @@
 
 
 from account.models import MyUser
-from django.contrib.auth.hashers import make_password
 from .roles import add_role
 from rest_framework.response import Response
 from django.http import HttpRequest
@@ -10,33 +9,17 @@ from rest_framework import status
 
 
 # NOTE функция для добавления пользователей в базу данных
-def add_users(request: HttpRequest):
+def add_users(request: HttpRequest, user: MyUser = MyUser):
     try:
-        response = {}
+        
+        if isinstance(request.data, dict):
+            response = add_one_user(user, request.data)
 
-        for validated_data in request.data:
-            user = MyUser()
+        elif isinstance(request.data, list):
+            response = add_many_users(request.data)
 
-            user.lastName = validated_data['lastName']
-            user.firstName = validated_data['firstName']
-            user.username = validated_data['username']
-            user.set_password(make_password(validated_data['password']))
-
-            user.save()
-
-            if validated_data['roles']:
-                try:
-                    response_from_roles = add_role(user, validated_data)
-
-                    response[f"{user}"] = "Пользователь успешно добавлен"
-
-                    if response_from_roles:
-                        response["messages"] = response_from_roles
-
-                except:
-                    return Response(data={
-                        "server": "Роли не были добавлены"
-                    }, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'Server': 'Ошибка в синтаксисе json'})
                 
         return Response(response)
     
@@ -45,3 +28,58 @@ def add_users(request: HttpRequest):
         return Response(data={
             "server": 'Неверные данные'
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+def add_many_users(data: list[MyUser]):
+    response = {}
+
+    for user_data in data:
+        user = MyUser
+        response.update(add_one_user(user, user_data))
+
+    return response
+
+
+
+def add_one_user(user: MyUser, validated_data: dict):
+    try:
+        response = {}
+
+        user = user.objects.create(
+             lastName=validated_data['lastName'],
+             firstName=validated_data['firstName'],
+             username=validated_data['username']
+             )
+
+        user.set_password(validated_data['password'])
+
+        user.save()
+    
+        response[f"{user}"] = "Пользователь успешно добавлен"
+
+        try:
+            if validated_data['roles']:
+                response_from_roles = add_role(user, validated_data)
+
+                if response_from_roles:
+                    response["messages"] = response_from_roles
+
+        except:
+            pass
+        
+        return response
+
+    except:
+        return {f"{user.username}": "не был добавлен"}
+        
+
+def delete(request: HttpRequest, id: int):
+    try:
+        user = MyUser.objects.get(pk=id)
+        username = str(user.username)
+        user.delete()
+
+        return Response({f"{username}": "Успешно удален"})
+    
+    except:
+        return Response({"server": "Пользователь не найден"})
