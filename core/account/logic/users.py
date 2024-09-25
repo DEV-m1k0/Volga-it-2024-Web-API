@@ -1,11 +1,11 @@
 # SECTION - Бизнес логика для классов предствления из микросервиса account
 
 
-from account.models import MyUser
+from account.models import MyUser, ROLES, Role
 from .roles import add_role
 from rest_framework.response import Response
 from django.http import HttpRequest
-from rest_framework import status
+from rest_framework import status, request
 
 
 # NOTE функция для добавления пользователей в базу данных
@@ -83,3 +83,34 @@ def delete(request: HttpRequest, id: int):
     
     except:
         return Response({"server": "Пользователь не найден"})
+
+
+def filter_users(request: request.Request, user_role: str):
+    if user_role in ROLES:
+        try:
+            role = Role.objects.filter(role=user_role)
+            filter_users = MyUser.objects.filter(roles__in=role)
+            user = filter_users[0]
+
+            full_name: str = parse_name([user.lastName, user.firstName])
+
+            return Response({
+                "nameFilter": full_name,
+                "from": user.pk,
+                "count": len(filter_users)
+                }, status=status.HTTP_200_OK)
+
+        except:
+            print('Ошибка при фильтрации')
+
+
+def parse_name(fullName: list[str]):
+
+    full_name_list = []
+
+    for name in fullName:
+        name1 = name.replace("('", '')
+        name2 = name1.replace("',)", '')
+        full_name_list.append(name2)
+
+    return ' '.join(full_name_list)

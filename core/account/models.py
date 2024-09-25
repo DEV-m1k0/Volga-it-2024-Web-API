@@ -15,6 +15,9 @@ CHOICES_ROLE_FOR_MYUSER = [
 ]
 
 
+ROLES = ['Admin', 'Manager', 'Doctor', 'User']
+
+
 class Role(models.Model):
     role = models.CharField(max_length=20)
 
@@ -33,12 +36,3 @@ class MyUser(AbstractUser):
 
     def __str__(self) -> str:
         return str(self.username)
-    
-
-    @property
-    def access_token(self) -> str:
-        return str(RefreshToken.for_user(self).access_token)
-    
-    @property
-    def refresh_token(self) -> str:
-        return str(RefreshToken.for_user(self))
