@@ -1,6 +1,7 @@
 from django.urls import path
+from .views import HospitalsAPIView
 
 
 urlpatterns = [
-    path()
+    path('', HospitalsAPIView.as_view()),
 ]
