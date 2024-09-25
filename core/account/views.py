@@ -19,7 +19,7 @@ from .logic.update import update_user
 
 # NOTE Класс для обработки DELETE и PUT запросов для аккаунтов
 # LINK /api/Accounts/{id}/
-class MyUserViewSet(ModelViewSet):
+class MyUserIdAPIView(APIView):
     """
     ### Класс наследованный от ModelViewSet
     <p>Реализован для добавления такого функционала, как:</p>
@@ -31,8 +31,12 @@ class MyUserViewSet(ModelViewSet):
     """
 
     permission_classes = [permissions.IsAdminUser, ]
-    queryset = MyUser.objects.all()
-    serializer_class = MyUserSerializer
+
+    def put(self, request: HttpRequest, id: int):
+
+        response = update_user(request=request, id=id)
+
+        return response
 
 
 

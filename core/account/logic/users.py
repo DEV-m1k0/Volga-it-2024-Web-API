@@ -2,7 +2,6 @@
 
 
 from account.models import MyUser
-from django.contrib.auth.hashers import make_password
 from .roles import add_role
 from rest_framework.response import Response
 from django.http import HttpRequest
@@ -10,17 +9,17 @@ from rest_framework import status
 
 
 # NOTE функция для добавления пользователей в базу данных
-def add_users(request: HttpRequest):
+def add_users(request: HttpRequest, user: MyUser = MyUser):
     try:
         
         if isinstance(request.data, dict):
-            response = add_one_user(request.data)
+            response = update_fields(user, request.data)
 
         elif isinstance(request.data, list):
             response = add_many_users(request.data)
 
         else:
-            return Response({'data': 'Ошибка в синтаксисе json'})
+            return Response({'Server': 'Ошибка в синтаксисе json'})
                 
         return Response(response)
     
@@ -35,21 +34,23 @@ def add_many_users(data: list[MyUser]):
     response = {}
 
     for user_data in data:
-        response.update(add_one_user(user_data))
+        user = MyUser
+        response.update(update_fields(user, user_data))
 
     return response
 
 
 
-def add_one_user(validated_data: dict):
+def update_fields(user: MyUser, validated_data: dict):
     try:
         response = {}
 
-        user = MyUser()
+        user = user.objects.create(
+             lastName=validated_data['lastName'],
+             firstName=validated_data['firstName'],
+             username=validated_data['username']
+             )
 
-        user.lastName = validated_data['lastName']
-        user.firstName = validated_data['firstName']
-        user.username = validated_data['username']
         user.set_password(validated_data['password'])
 
         user.save()
@@ -69,7 +70,7 @@ def add_one_user(validated_data: dict):
         return response
 
     except:
-        return {"server": f"{user.username} не был добавлен"}
+        return {f"{user.username}": "не был добавлен"}
         
 
     

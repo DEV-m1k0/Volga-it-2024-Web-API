@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.request import Request, HttpRequest
 from rest_framework.status import HTTP_205_RESET_CONTENT
-from account.logic.users import add_one_user
+from account.logic.users import add_users
 
 
 #SECTION - Регистрация пользователей и получение токенов
@@ -12,9 +12,9 @@ from account.logic.users import add_one_user
 class SignUpAPIView(APIView):
     def post(self, request: Request):
 
-        response = add_one_user(request.data)
+        response = add_users(request)
 
-        return Response(response)
+        return response
 
 
 class ValidateTokenAPIView(APIView):

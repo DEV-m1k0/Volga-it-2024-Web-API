@@ -1,18 +1,21 @@
 from rest_framework.response import Response
 from rest_framework.request import Request
 from account.models import MyUser
-from django.contrib.auth.hashers import make_password
+from .users import update_fields
 
 
-def update_user(request: Request):
-    user: MyUser = request.user
-    
-    user.lastName = request.data["lastName"]
-    user.firstName = request.data["firstName"]
-    user.set_password(make_password(request.data["password"]))
+def update_user(request: Request, id=False):
+    if id:
+        user: MyUser = MyUser.objects.get(pk=id)
 
-    print(user)
+        response = update_fields(user, request.data)
 
-    user.save()
+        return Response(response)
 
-    return Response({"server": "Аккаунт успешно обновлен"})
+
+    else:
+        user: MyUser = request.user
+
+        response = update_fields(user, request.data)
+
+        return Response(response)
