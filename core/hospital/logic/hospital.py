@@ -37,7 +37,6 @@ def get_info_by_id(request: Request, id: int):
         })
     
 
-
 def get_rooms(hospital: Hospital) -> list:
     rooms_list = []
 
@@ -45,3 +44,6 @@ def get_rooms(hospital: Hospital) -> list:
         rooms_list.append(room[0])
 
     return rooms_list
+
+
+
