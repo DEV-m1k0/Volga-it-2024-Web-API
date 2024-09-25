@@ -129,3 +129,26 @@ def check_rooms(rooms: list):
 
     return rooms_has, rooms_has_not
 
+
+def update_hospital_by_id(request: Request, id: int):
+
+    response = {}
+    hospital = Hospital.objects.get(pk=id)
+
+    try:
+        hospital.name = request.data['name']
+        hospital.address = request.data['address']
+        hospital.contactPhone = request.data['contactPhone']
+
+        hospital.save()
+
+        response[f"{hospital.name}"] = "Была успешно обновлена"
+
+        add_room(request_rooms=request.data['rooms'], hospital=hospital)
+
+        return Response(response)
+
+    except:
+        return Response({
+            f"ERROR_{hospital.name}": "Больница не была обновлена. Пожалуйства, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
+        })
