@@ -13,7 +13,7 @@ def add_users(request: HttpRequest, user: MyUser = MyUser):
     try:
         
         if isinstance(request.data, dict):
-            response = update_fields(user, request.data)
+            response = add_one_user(user, request.data)
 
         elif isinstance(request.data, list):
             response = add_many_users(request.data)
@@ -35,13 +35,13 @@ def add_many_users(data: list[MyUser]):
 
     for user_data in data:
         user = MyUser
-        response.update(update_fields(user, user_data))
+        response.update(add_one_user(user, user_data))
 
     return response
 
 
 
-def update_fields(user: MyUser, validated_data: dict):
+def add_one_user(user: MyUser, validated_data: dict):
     try:
         response = {}
 
