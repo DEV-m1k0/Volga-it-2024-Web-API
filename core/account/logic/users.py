@@ -1,11 +1,11 @@
 # SECTION - Бизнес логика для классов предствления из микросервиса account
 
 
-from account.models import MyUser
+from account.models import MyUser, ROLES, Role
 from .roles import add_role
 from rest_framework.response import Response
 from django.http import HttpRequest
-from rest_framework import status
+from rest_framework import status, request
 
 
 # NOTE функция для добавления пользователей в базу данных
@@ -38,7 +38,6 @@ def add_many_users(data: list[MyUser]):
         response.update(add_one_user(user, user_data))
 
     return response
-
 
 
 def add_one_user(user: MyUser, validated_data: dict):
@@ -83,3 +82,38 @@ def delete(request: HttpRequest, id: int):
     
     except:
         return Response({"server": "Пользователь не найден"})
+
+
+def filter_users(request: request.Request, user_role: str):
+    if user_role in ROLES:
+        try:
+            role = Role.objects.filter(role=user_role)
+            filter_users = MyUser.objects.filter(roles__in=role)
+            user = filter_users[0]
+
+            return Response({
+                "nameFilter": user.get_full_name,
+                "from": user.pk,
+                "count": len(filter_users)
+                }, status=status.HTTP_200_OK)
+
+        except:
+            print('Ошибка при фильтрации')
+
+
+def get_info(user: MyUser):
+
+    role_list = []
+    try:
+        for role in user.roles.all():
+            role_list.append(role.role)
+
+    except:
+        pass
+
+    return Response({
+        "lastName": str(user.lastName),
+        "firstName": str(user.firstName),
+        "username": str(user.username),
+        "roles": role_list
+        })
