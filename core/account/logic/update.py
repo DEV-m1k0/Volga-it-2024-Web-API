@@ -25,8 +25,8 @@ def update(user: MyUser, data) -> dict:
     try:
         response = {}
 
-        user.lastName=data['lastName'],
-        user.firstName=data['firstName'],
+        user.lastName=data['lastName']
+        user.firstName=data['firstName']
         user.username=data['username']
 
         user.set_password(data['password'])

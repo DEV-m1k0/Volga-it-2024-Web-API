@@ -40,7 +40,6 @@ def add_many_users(data: list[MyUser]):
     return response
 
 
-
 def add_one_user(user: MyUser, validated_data: dict):
     try:
         response = {}
@@ -92,10 +91,8 @@ def filter_users(request: request.Request, user_role: str):
             filter_users = MyUser.objects.filter(roles__in=role)
             user = filter_users[0]
 
-            full_name: str = parse_name([user.lastName, user.firstName])
-
             return Response({
-                "nameFilter": full_name,
+                "nameFilter": user.get_full_name,
                 "from": user.pk,
                 "count": len(filter_users)
                 }, status=status.HTTP_200_OK)
@@ -104,13 +101,19 @@ def filter_users(request: request.Request, user_role: str):
             print('Ошибка при фильтрации')
 
 
-def parse_name(fullName: list[str]):
+def get_info(user: MyUser):
 
-    full_name_list = []
+    role_list = []
+    try:
+        for role in user.roles.all():
+            role_list.append(role.role)
 
-    for name in fullName:
-        name1 = name.replace("('", '')
-        name2 = name1.replace("',)", '')
-        full_name_list.append(name2)
+    except:
+        pass
 
-    return ' '.join(full_name_list)
+    return Response({
+        "lastName": str(user.lastName),
+        "firstName": str(user.firstName),
+        "username": str(user.username),
+        "roles": role_list
+        })

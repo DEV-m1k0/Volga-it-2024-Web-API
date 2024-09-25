@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from django.http import HttpRequest
 from .models import MyUser
-from .logic.users import add_users, delete
+from .logic.users import add_users, delete, get_info
 from .logic.update import update_user
 
 
@@ -142,17 +142,9 @@ class MyUserMeAPIView(APIView):
     def get(self, request: HttpRequest):
         user: MyUser = request.user
 
-        role_list = []
+        response = get_info(user=user)
 
-        for role in user.roles.all():
-            role_list.append(role.role)
-
-        return Response({
-            "lastName": str(user.lastName),
-            "firstName": str(user.firstName),
-            "username": str(user.username),
-            "roles": role_list
-            })
+        return response
     
 
 class UpdateMeAPIView(APIView):
