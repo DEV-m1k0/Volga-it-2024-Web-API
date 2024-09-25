@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
-from .logic.hospital import get_all, get_rooms, get_info_by_id
+from .logic.hospital import get_all, get_rooms, get_info_by_id, hospital_create
 from .models import Hospital
 
 # Create your views here.
@@ -18,6 +18,12 @@ class HospitalsAPIView(APIView):
             response = get_all(request=request)
             return response
         
+    def post(self, request: Request):
+
+        response = hospital_create(request=request)
+
+        return response
+
 
 class RoomsByIdAPIVIew(APIView):
     def get(self, request: Request, id: int):

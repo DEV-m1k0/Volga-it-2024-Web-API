@@ -4,7 +4,7 @@ from django.db import models
 
 
 class Room(models.Model):
-    room = models.CharField(max_length=50)
+    room = models.CharField(max_length=50, unique=True)
 
     def __str__(self) -> str:
         return str(self.room)
