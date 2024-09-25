@@ -58,8 +58,6 @@ INSTALLED_APPS = [
 # NOTE модель для авторизации пользователей
 AUTH_USER_MODEL = 'account.MyUser'
 
-
-
 REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': [

@@ -50,7 +50,7 @@ def add_one_user(validated_data: dict):
         user.lastName = validated_data['lastName']
         user.firstName = validated_data['firstName']
         user.username = validated_data['username']
-        user.set_password(make_password(validated_data['password']))
+        user.set_password(validated_data['password'])
 
         user.save()
     

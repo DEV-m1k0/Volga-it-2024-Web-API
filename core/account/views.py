@@ -2,10 +2,12 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework import status, permissions
 from rest_framework.response import Response
+from rest_framework.request import Request
 from django.http import HttpRequest
 from .models import MyUser
 from .serializers import MyUserSerializer
 from .logic.users import add_users
+from .logic.update import update_user
 
 
 
@@ -37,6 +39,7 @@ class MyUserViewSet(ModelViewSet):
 # NOTE класс для обработки GET и POST запросов для аккаунтов
 # LINK /api/Accounts/
 class MyUserAPIView(APIView):
+
     """
     #### Класс представления от APIView
     для вывода количества всех пользователей
@@ -118,4 +121,34 @@ class MyUserAPIView(APIView):
         
         # формирование ответа
         response = add_users(request=request)
+        return response
+    
+
+
+# NOTE класс для обработки GET запрос для аккаунта
+# LINK /api/Accounts/Me/
+class MyUserMeAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def get(self, request: HttpRequest):
+        user: MyUser = request.user
+
+        role_list = []
+
+        for role in user.roles.all():
+            role_list.append(role.role)
+
+        return Response({
+            "lastName": str(user.lastName),
+            "firstName": str(user.firstName),
+            "username": str(user.username),
+            "roles": role_list
+            })
+    
+
+class UpdateMeAPIView(APIView):
+    def put(self, request: Request):
+
+        response = update_user(request)
+
         return response

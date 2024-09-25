@@ -15,12 +15,12 @@ class SignUpAPIView(APIView):
         response = add_one_user(request.data)
 
         return Response(response)
-    
 
 
 class ValidateTokenAPIView(APIView):
     def get(self, request: Request):
         return Response({"accessToken": f"{request.user.access_token}"})
+    
 
 
 #SECTION - Занесение токенов в BlackList
