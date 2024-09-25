@@ -73,7 +73,13 @@ def add_one_user(user: MyUser, validated_data: dict):
         return {f"{user.username}": "не был добавлен"}
         
 
-    
-    
+def delete(request: HttpRequest, id: int):
+    try:
+        user = MyUser.objects.get(pk=id)
+        username = str(user.username)
+        user.delete()
 
-
+        return Response({f"{username}": "Успешно удален"})
+    
+    except:
+        return Response({"server": "Пользователь не найден"})

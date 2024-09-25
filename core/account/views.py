@@ -1,12 +1,10 @@
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.request import Request
 from django.http import HttpRequest
 from .models import MyUser
-from .serializers import MyUserSerializer
-from .logic.users import add_users
+from .logic.users import add_users, delete
 from .logic.update import update_user
 
 
@@ -35,6 +33,13 @@ class MyUserIdAPIView(APIView):
     def put(self, request: HttpRequest, id: int):
 
         response = update_user(request=request, id=id)
+
+        return response
+    
+
+    def delete(self, request: HttpRequest, id: int):
+
+        response = delete(request=request, id=id)
 
         return response
 
