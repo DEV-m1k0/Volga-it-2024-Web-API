@@ -117,3 +117,16 @@ def get_info(user: MyUser):
         "username": str(user.username),
         "roles": role_list
         })
+
+
+def get_users_by_role(request_role: str):
+    try:
+        role = Role.objects.get(role="Doctor")
+        users = MyUser.objects.filter(roles__exact=role)
+
+        return users
+
+    except:
+        print(False)
+        return False
+    

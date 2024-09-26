@@ -7,7 +7,7 @@ from hospital.models import Hospital
 
 class TimeTable(models.Model):
     hospitalId = models.PositiveIntegerField()
-    doctorlId = models.PositiveIntegerField()
+    doctorId = models.PositiveIntegerField()
     date_from = models.DateTimeField()
     date_to = models.DateTimeField()
     room = models.CharField(max_length=50)
