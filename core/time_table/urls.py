@@ -3,5 +3,6 @@ from .views import TimeTableAPIView
 
 
 urlpatterns = [
-    path('', TimeTableAPIView.as_view())
+    path('', TimeTableAPIView.as_view()),
+    path("<int:id>/", TimeTableAPIView.as_view())
 ]
