@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from .models import TimeTable
-from .logic.time_table import create_time_table, update_time_table
+from .logic.time_table import create_time_table, update_time_table, delete_time_table
 
 
 # Create your views here.
@@ -15,4 +15,8 @@ class TimeTableAPIView(APIView):
     
     def put(self, request: Request, id: int):
         response = update_time_table(request=request, id=id)
+        return response
+    
+    def delete(self, request: Request, id: int):
+        response = delete_time_table(request=request, id=id)
         return response

@@ -163,5 +163,20 @@ def update_time_table(request: Request, id: int) -> Response:
     
     except:
         return Response({
-            "SERVER_ERROR": "Расписание не было обнавлено. Пожалуйства, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
+            "SERVER_ERROR": "Расписание не было обнавлено. Пожалуйста, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+
+def delete_time_table(request: Request, id: int) -> Response:
+    try:
+        time_table = TimeTable.objects.get(pk=id)
+        time_table.delete()
+
+        return Response({
+            "SERVRER": "Запись была успешно удалена"
+        })
+
+    except:
+        return Response({
+            "SERVER_ERROR": "Расписание не было Удалено. Пожалуйста, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
         }, status=status.HTTP_400_BAD_REQUEST)
