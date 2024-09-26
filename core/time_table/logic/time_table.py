@@ -167,7 +167,7 @@ def update_time_table(request: Request, id: int) -> Response:
         }, status=status.HTTP_400_BAD_REQUEST)
     
 
-def delete_time_table(request: Request, id: int) -> Response:
+def delete_time_table(id: int) -> Response:
     try:
         time_table = TimeTable.objects.get(pk=id)
         time_table.delete()
