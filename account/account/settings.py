@@ -37,8 +37,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # компоненты Django
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+
+    # Мои приложения
+    'login',  # Микросервис авторизации
 ]
 
+
+AUTH_USER_MODEL = 'login.MyUser'
+
+
+# NOTE - Настройка django
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -49,8 +62,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+# NOTE - Настройка пути к микросервису
 ROOT_URLCONF = 'account.urls'
 
+
+# NOTE - Настройка путей к шаблонам
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -67,11 +84,13 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'account.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
 
 DATABASES = {
     'default': {
@@ -80,9 +99,37 @@ DATABASES = {
     }
 }
 
+# NOTE - Настройка базы данных для локального использования
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': "postgres",
+#         'USER': "postgres",
+#         'PASSWORD': "postgres1234",
+#         'HOST': "localhost",
+#         'PORT': "5432",
+#     }
+# }
+
+
+
+# NOTE - Настройка базы данных для использования в docker
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': "postgres",
+#         'USER': "postgres",
+#         'PASSWORD': "postgres1234",
+#         'HOST': "NAME_DATABASE",
+#         'PORT': "5432",
+#     }
+# }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
+
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -102,6 +149,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
+
 
 LANGUAGE_CODE = 'en-us'
 
