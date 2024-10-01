@@ -13,6 +13,10 @@ def add_users(request: HttpRequest, user: MyUser = MyUser):
     try:
         
         if isinstance(request.data, dict):
+            if request.data['password'] == "":
+                return Response(
+                    {"USER_PASSWORD_ERROR": "Пароль не может быть пустым!"},
+                    status=status.HTTP_400_BAD_REQUEST)
             response = add_one_user(user, request.data)
 
         elif isinstance(request.data, list):
@@ -26,7 +30,7 @@ def add_users(request: HttpRequest, user: MyUser = MyUser):
 
     except:
         return Response(data={
-            "server": 'Неверные данные'
+            "DATA_ERROR": 'Данные некорректны. Пожалуйста, убедитесь, что json корректен!'
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -42,6 +46,9 @@ def add_many_users(data: list[MyUser]):
 
 def add_one_user(user: MyUser, validated_data: dict):
     try:
+        if validated_data['password'] == "":
+            return {"USER_PASSWORD_ERROR": "Пароль не может быть пустым!"}
+        
         response = {}
 
         user = user.objects.create(
@@ -50,6 +57,7 @@ def add_one_user(user: MyUser, validated_data: dict):
              username=validated_data['username']
              )
 
+        
         user.set_password(validated_data['password'])
 
         user.save()
@@ -69,7 +77,7 @@ def add_one_user(user: MyUser, validated_data: dict):
         return response
 
     except:
-        return {f"{user.username}": "не был добавлен"}
+        return {"USER_ERROR": "Пользователь не был добавлен. Скорее всего, пользователь с таким username уже существует"}
         
 
 def delete(request: HttpRequest, id: int):
