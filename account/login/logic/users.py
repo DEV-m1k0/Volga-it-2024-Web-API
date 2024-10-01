@@ -117,7 +117,7 @@ def get_info(user: MyUser):
             role_list.append(role.role)
 
     except:
-        pass
+        return Response({"ERROR_ROLE": "Ошибка при получении ролей"}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({
         "lastName": str(user.lastName),

@@ -20,11 +20,11 @@ from .views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/Acounts/Me/', MyUserMeAPIView.as_view()),
+    path('api/Accounts/Me/', MyUserMeAPIView.as_view()),
     path("api/Acounts/Update/", UpdateMeAPIView.as_view()),
     path('api/Acounts/<int:id>/', MyUserIdAPIView.as_view()),
     path('api/Acounts/', MyUserAPIView.as_view()),
     path('api/Authentication/', include('login.urls')),
-    path("Doctors/", DoctorsAPIView.as_view()),
-    path("Doctors/<int:id>/", DoctorIdAPIView.as_view())
+    path("api/Doctors/", DoctorsAPIView.as_view()),
+    path("api/Doctors/<int:id>/", DoctorIdAPIView.as_view())
 ]

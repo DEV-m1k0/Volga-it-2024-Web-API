@@ -48,7 +48,6 @@ class MyUserIdAPIView(APIView):
 # NOTE класс для обработки GET и POST запросов для аккаунтов
 # LINK /api/Accounts/
 class MyUserAPIView(APIView):
-
     """
     #### Класс представления от APIView
     для вывода количества всех пользователей
@@ -137,9 +136,37 @@ class MyUserAPIView(APIView):
 # NOTE класс для обработки GET запрос для аккаунта
 # LINK /api/Accounts/Me/
 class MyUserMeAPIView(APIView):
+    """
+    ### Класс для вывода информации о текущем авторизованном пользователе
+    <p>Класс доступен только <strong><u>авторизованным пользователям.</u></strong></p>
+    В классе реализованы следующии функции:
+    <ul>
+        <li>GET</li>
+    </ul>
+    """
     permission_classes = [permissions.IsAuthenticated, ]
 
     def get(self, request: HttpRequest):
+        """
+        ### GET запрос для MyUserMeAPIView
+        <hr>
+        <p>Если пользователь есть, то возварщает следующий <strong>GET</strong>:</p>
+        ```
+        {
+            "lastName": "string",
+            "firstName": "string",
+            "username": "string",
+            "roles": ["string"]
+        }
+        ```
+        <hr>
+        <p>Если пользователь не авторизован, то возварщает следующий <strong>GET</strong>:</p>
+        ```
+        {
+            "ERROR_ROLE": "Ошибка при получении ролей"
+        }
+        ```
+        """
         user: MyUser = request.user
 
         response = get_info(user=user)
