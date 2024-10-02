@@ -111,21 +111,23 @@ def filter_users(request: request.Request, user_role: str):
 
 
 def get_info(user: MyUser):
-
-    role_list = []
     try:
+        role_list = []
+
         for role in user.roles.all():
             role_list.append(role.role)
 
-    except:
-        return Response({"ERROR_ROLE": "Ошибка при получении ролей"}, status=status.HTTP_400_BAD_REQUEST)
-
-    return Response({
+        return Response({
         "lastName": str(user.lastName),
         "firstName": str(user.firstName),
         "username": str(user.username),
         "roles": role_list
         })
+
+    except:
+        return Response({"ERROR_ROLE": "Ошибка при получении ролей."}, status=status.HTTP_400_BAD_REQUEST)
+
+    
 
 
 def get_users_by_role(request_role: str):

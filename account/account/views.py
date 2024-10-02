@@ -313,11 +313,48 @@ class DoctorsAPIView(APIView):
         return response
     
 
+# LINK /api/Doctors/{id}/
 class DoctorIdAPIView(APIView):
+    """
+    ### Класс для получения информации о докторе по ID.
+    <p>Данный класс доступен только для авторизованных пользователей</p>
+    <p>В класс реализованы следующие методы:</p>
+    <ul>
+        <li>GET</li>
+    </ul>
+    """
     def get(self, request: Request, id: int):
+        """
+        ### GET запрос для DoctorIdAPIView.
+        <p>В данном методе мы получаем ID доктора. Если доктор с таким ID существует, то сервер возваращает:</p>
+        ```
+        {
+            "lastName": "string",
+            "firstName": "string",
+            "username": "string",
+            "roles": [
+                "string",
+                ...,
+                "string",
+            ]
+        }
+        ```
+        <p>Если доктора с таким ID не существует, тогда сервер возвращает:</p>
+        ```
+        {
+            "ERROR_ROLE": "Ошибка при получении ролей. Скорее всего, доктора с таким ID не существует."
+        }
+        ```
+        """
         
-        user = MyUser.objects.get(pk=id)
+        try:
+            user = MyUser.objects.get(pk=id)
 
-        response = get_info(user=user)
+            response = get_info(user=user)
 
-        return response
+            return response
+        
+        except:
+            return Response({
+                "ERROR_ROLE": "Ошибка при получении ролей. Скорее всего, доктора с таким ID не существует."
+                }, status=status.HTTP_400_BAD_REQUEST)
