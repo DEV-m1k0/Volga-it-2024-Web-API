@@ -14,7 +14,6 @@ from login.logic.update import update_user
 
 
 
-# NOTE Класс для обработки DELETE и PUT запросов для аккаунтов
 # LINK /api/Accounts/{id}/
 class MyUserIdAPIView(APIView):
     """
@@ -70,6 +69,23 @@ class MyUserIdAPIView(APIView):
     
 
     def delete(self, request: HttpRequest, id: int):
+        """
+        ### DELETE запрос для класса MyUserIdAPIView.
+        <p>Используется для удаления пользователя.</p>
+        <p>Если пользователь будет успешно удален, сервер вернет:</p>
+        ```
+        {
+            "username": "Успешно удален"
+        }
+        ```
+        <hr>
+        <p>Если пользователь не найден, то сервер вернет:</p>
+        ```
+        {
+            "SERVER_NOT_FOUND": "Пользователь не найден"
+        }
+        ```
+        """
 
         response = delete(request=request, id=id)
 
@@ -255,6 +271,12 @@ class UpdateMeAPIView(APIView):
 
         return response
     
+
+
+
+# SECTION для работы с докторами
+
+
 
 class DoctorsAPIView(APIView):
     def get(self, request: Request):

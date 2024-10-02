@@ -84,10 +84,10 @@ def delete(request: HttpRequest, id: int):
         username = str(user.username)
         user.delete()
 
-        return Response({f"{username}": "Успешно удален"})
+        return Response({f"{username}": "Успешно удален"}, status=status.HTTP_200_OK)
     
     except:
-        return Response({"server": "Пользователь не найден"})
+        return Response({"SERVER_NOT_FOUND": "Пользователь не найден"}, status=status.HTTP_404_NOT_FOUND)
 
 
 def filter_users(request: request.Request, user_role: str):
