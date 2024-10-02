@@ -92,7 +92,6 @@ class MyUserAPIView(APIView):
                 }, status=status.HTTP_404_NOT_FOUND)
         
 
-
     def post(self, request: HttpRequest):
         # (POST) - обработка запроса
         """
@@ -132,8 +131,6 @@ class MyUserAPIView(APIView):
         return response
     
 
-
-# NOTE класс для обработки GET запрос для аккаунта
 # LINK /api/Accounts/Me/
 class MyUserMeAPIView(APIView):
     """
@@ -174,8 +171,44 @@ class MyUserMeAPIView(APIView):
         return response
     
 
+# LINK /api/Accounts/Update/
 class UpdateMeAPIView(APIView):
+    """
+    ### Класс для изменения информации текущего авторизованного пользователя
+    <p>Класс доступен только <strong><u>авторизованным пользователям.</u></strong></p>
+    В классе реализованы следующие методы:
+    <ul>
+        <li>PUT</li>
+    </ul>
+    """
+
+    permission_classes = [permissions.IsAuthenticated, ]
+
     def put(self, request: Request):
+        """
+        ### PUT запрос для UpdateMeAPIView
+        <p>Метод принимает json с новыми данными пользователя и сохраняет их в БД.</p>
+        Поддерживается следующий формат json:
+        ```
+        {
+            "lastName": "string",
+            "firstName": "string",
+            "password": "string"
+        }
+        ```
+        <p>Если данные корректны, то возвращает следующий ответ:</p>
+        ```
+        {
+            "username": "Успешно обновлен"
+        }        
+        ```
+        <p>Если данные не корректны, то будет возвращено следующие искючение:</p>
+        ```
+        {
+            "string2": "Пользователь не был обновлен. Пожалуйста, проверьте корректность json"
+        }
+        ```
+        """
 
         response = update_user(request)
 

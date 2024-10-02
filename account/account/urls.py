@@ -21,7 +21,7 @@ from .views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/Accounts/Me/', MyUserMeAPIView.as_view()),
-    path("api/Acounts/Update/", UpdateMeAPIView.as_view()),
+    path("api/Accounts/Update/", UpdateMeAPIView.as_view()),
     path('api/Acounts/<int:id>/', MyUserIdAPIView.as_view()),
     path('api/Acounts/', MyUserAPIView.as_view()),
     path('api/Authentication/', include('login.urls')),
