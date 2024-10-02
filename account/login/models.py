@@ -1,10 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your models here.
-
-
 
 # Список ролей
 CHOICES_ROLE_FOR_MYUSER = [
@@ -19,6 +16,9 @@ ROLES = ['Admin', 'Manager', 'Doctor', 'User']
 
 
 class Role(models.Model):
+    """
+    #### Модель для хранения ролей пользователей.
+    """
     role = models.CharField(max_length=20)
 
     def __str__(self) -> str:
@@ -27,7 +27,13 @@ class Role(models.Model):
 
 class MyUser(AbstractUser):
     """
-    Модель с пользователями
+    ### Основная модель пользователей.
+    Данная модель наследует от базового AbstractUser, добавляя поля:
+    <ul>
+        <li>lastName</li>
+        <li>firstName</li>
+        <li>roles</li>
+    </ul>
     """
 
     lastName = models.CharField(max_length=30)
@@ -40,4 +46,7 @@ class MyUser(AbstractUser):
 
     @property
     def get_full_name(self) -> str:
+        """
+        #### Свойство, возвращающее полное имя пользователя.
+        """
         return f"{self.lastName} {self.firstName}"

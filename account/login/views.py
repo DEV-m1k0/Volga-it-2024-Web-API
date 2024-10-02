@@ -1,17 +1,16 @@
-import jwt.algorithms
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.request import Request, HttpRequest
 from rest_framework import status
-from rest_framework_simplejwt.tokens import Token
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 from .logic.users import add_users
-from login.models import MyUser
 
 
 #SECTION - Регистрация пользователей и получение токенов
 
 
+# LINK /api/Authentication/SignUp/
 class SignUpAPIView(APIView):
     """
     ### Класс для регистрации пользователей
@@ -58,6 +57,7 @@ class SignUpAPIView(APIView):
         return response
 
 
+# LINK /api/Authentication/Validate/
 class ValidateTokenAPIView(APIView):
     """
     ### Класс для интроспекции токена
@@ -83,9 +83,8 @@ class ValidateTokenAPIView(APIView):
 #SECTION - Занесение токенов в BlackList
 
 
-from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 
-
+# LINK /api/Authentication/SignOut/
 class ResetTokenAPIView(APIView):
     """
     ### Класс для сброса токенов

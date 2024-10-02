@@ -16,10 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
 from .views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', TemplateView.as_view(template_name='index.html')),
     path('api/Accounts/Me/', MyUserMeAPIView.as_view()),
     path("api/Accounts/Update/", UpdateMeAPIView.as_view()),
     path('api/Accounts/<int:id>/', MyUserIdAPIView.as_view()),

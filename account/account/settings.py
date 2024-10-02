@@ -111,11 +111,14 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'account.urls'
 
 
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+
 # NOTE - Настройка путей к шаблонам
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -136,24 +139,24 @@ WSGI_APPLICATION = 'account.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# NOTE - Настройка базы данных для локального использования
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': "postgres",
-#         'USER': "postgres",
-#         'PASSWORD': "postgres1234",
-#         'HOST': "localhost",
-#         'PORT': "5432",
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+# NOTE - Настройка базы данных для локального использования
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': "postgres",
+        'USER': "postgres",
+        'PASSWORD': "postgres1234",
+        'HOST': "localhost",
+        'PORT': "5432",
+    }
+}
 
 
 
