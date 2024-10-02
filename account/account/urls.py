@@ -22,8 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/Accounts/Me/', MyUserMeAPIView.as_view()),
     path("api/Accounts/Update/", UpdateMeAPIView.as_view()),
-    path('api/Acounts/<int:id>/', MyUserIdAPIView.as_view()),
-    path('api/Acounts/', MyUserAPIView.as_view()),
+    path('api/Accounts/<int:id>/', MyUserIdAPIView.as_view()),
+    path('api/Accounts/', MyUserAPIView.as_view()),
     path('api/Authentication/', include('login.urls')),
     path("api/Doctors/", DoctorsAPIView.as_view()),
     path("api/Doctors/<int:id>/", DoctorIdAPIView.as_view())

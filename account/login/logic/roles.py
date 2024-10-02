@@ -20,6 +20,11 @@ def add_role(user: MyUser, validate_data: dict[str, Any]):
             roles = list(Role.objects.filter(role__in=validate_data['roles']))
             user.roles.set(roles)
 
+            if "Admin" in validate_data['roles']:
+                user.is_staff = True
+                user.is_superuser = True
+                user.save()
+
         else:
             response[f"{user}"] = "Роли не были добавлены. Убедитесь в корректности введенных ролей"
 

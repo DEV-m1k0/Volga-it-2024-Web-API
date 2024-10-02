@@ -21,11 +21,8 @@ def add_users(request: HttpRequest, user: MyUser = MyUser):
 
         elif isinstance(request.data, list):
             response = add_many_users(request.data)
-
-        else:
-            return Response({'Server': 'Ошибка в синтаксисе json'})
-                
-        return Response(response)
+        
+        return Response(response, status=status.HTTP_207_MULTI_STATUS)
     
 
     except:
@@ -47,7 +44,7 @@ def add_many_users(data: list[MyUser]):
 def add_one_user(user: MyUser, validated_data: dict):
     try:
         if validated_data['password'] == "":
-            return {"USER_PASSWORD_ERROR": "Пароль не может быть пустым!"}
+            return {f"{validated_data['username']}_PASSWORD_ERROR": "Пароль не может быть пустым!"}
         
         response = {}
 
@@ -72,12 +69,13 @@ def add_one_user(user: MyUser, validated_data: dict):
                     response["messages"] = response_from_roles
 
         except:
-            pass
+            response[f"{user.username}_messages"] = "Ошибка при добавлении ролей. Скорее всего, ошибка в синтаксисе!"
+            return response
         
         return response
 
     except:
-        return {"USER_ERROR": "Пользователь не был добавлен. Скорее всего, пользователь с таким username уже существует"}
+        return {f"{validated_data['username']}_USER_ERROR": "Пользователь не был добавлен. Скорее всего, пользователь с таким username уже существует или какое-то из полей написано не вернно!"}
         
 
 def delete(request: HttpRequest, id: int):
