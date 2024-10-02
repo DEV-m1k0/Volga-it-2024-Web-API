@@ -97,6 +97,7 @@ def filter_users(request: request.Request, user_role: str):
             filter_users = MyUser.objects.filter(roles__in=role)
             user = filter_users[0]
 
+
             return Response({
                 "nameFilter": user.get_full_name,
                 "from": user.pk,
@@ -104,7 +105,9 @@ def filter_users(request: request.Request, user_role: str):
                 }, status=status.HTTP_200_OK)
 
         except:
-            print('Ошибка при фильтрации')
+            return Response({
+                "SERVER_NOT_FOUND": "Сервер не нашел пользователей с данной ролью. Скорее всего, пользователь с такой ролью не существует."
+                }, status=status.HTTP_404_NOT_FOUND)
 
 
 def get_info(user: MyUser):

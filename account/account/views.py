@@ -277,9 +277,38 @@ class UpdateMeAPIView(APIView):
 # SECTION для работы с докторами
 
 
-
+# LINK /api/Doctors/
 class DoctorsAPIView(APIView):
+    """
+    ### Класс для вывода списка всех докторов.
+    <p>Класс доступен только авторизованным пользователям.</p>
+    В данном классе реализованы следующие методы:
+    <ul>
+        <li>GET</li>
+    </ul>
+    """
+
+    permission_classes = [permissions.IsAuthenticated, ]
+
     def get(self, request: Request):
+        """
+        ### GET запрос для DoctorsAPIView.
+        <p>При вызове данного метода, если пользователи с ролью 'Doctor' будут найдены, то сервер вернет:</p>
+        ```
+        {
+            "nameFilter": "Полное имя первого найденного доктора",
+            "from": "ID первого доктора",
+            "count": "Количество всех докторов"
+        }
+        ```
+        <hr>
+        <p>Если пользователей с ролью 'Doctor' не будет, то сервер вернет:</p>
+        ```
+        {
+            "SERVER_NOT_FOUND": "Сервер не нашел пользователей с данной ролью. Скорее всего, пользователь с такой ролью не существует."
+        }
+        ```
+        """
         response = filter_users(request=request, user_role='Doctor')
         return response
     
