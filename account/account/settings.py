@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import datetime
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,9 +29,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-w3#4!^ruov#&tlaxa-so@h_*u!78*m#fz#no9i4q-fxkf4n!&5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -43,9 +48,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'drf_spectacular',
 
     # Мои приложения
-    'login',  # Микросервис авторизации
+    'login',
+    'django.contrib.postgres',
 ]
 
 
@@ -55,13 +62,21 @@ AUTH_USER_MODEL = 'login.MyUser'
 
 # NOTE - Настройка JWT-токенов
 REST_FRAMEWORK = {
-
     'DEFAULT_AUTHENTICATION_CLASSES': [
-
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-
     ],
 
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # Схема для автоматической генерации API-документации
+
+}
+
+
+# Настройки для drf-spectacular
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'User Management API',                               # Название API
+    'DESCRIPTION': 'API для регистрации, получения и удаления пользователей.',  # Описание API
+    'VERSION': '1.0.0',                                           # Версия API
+    'SERVE_INCLUDE_SCHEMA': False,                                # Отключение схемы в ответах API
 }
 
 
@@ -132,6 +147,13 @@ TEMPLATES = [
 ]
 
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+]
+
+
 WSGI_APPLICATION = 'account.wsgi.application'
 
 
@@ -147,30 +169,30 @@ WSGI_APPLICATION = 'account.wsgi.application'
 # }
 
 # NOTE - Настройка базы данных для локального использования
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "postgres",
-        'USER': "postgres",
-        'PASSWORD': "postgres1234",
-        'HOST': "localhost",
-        'PORT': "5432",
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': "api_hospital",
+#         'USER': "postgres",
+#         'PASSWORD': "postgres1234",
+#         'HOST': "localhost",
+#         'PORT': "5432",
+#     }
+# }
 
 
 
 # NOTE - Настройка базы данных для использования в docker
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': "postgres",
-#         'USER': "postgres",
-#         'PASSWORD': "postgres1234",
-#         'HOST': "NAME_DATABASE",
-#         'PORT': "5432",
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
+    }
+}
 
 
 # Password validation

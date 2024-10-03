@@ -16,6 +16,7 @@
 *.tax2010
 *.vcf
 *.xml
+.obsidian
 
 ### Database ###
 *.accdb

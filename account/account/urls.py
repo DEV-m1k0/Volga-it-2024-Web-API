@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
+from drf_spectacular.views import SpectacularSwaggerView
 from .views import *
 
 urlpatterns = [
@@ -28,5 +29,7 @@ urlpatterns = [
     path('api/Accounts/', MyUserAPIView.as_view()),
     path('api/Authentication/', include('login.urls')),
     path("api/Doctors/", DoctorsAPIView.as_view()),
-    path("api/Doctors/<int:id>/", DoctorIdAPIView.as_view())
+    path("api/Doctors/<int:id>/", DoctorIdAPIView.as_view()),
+    # Swagger UI
+    path('api/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]

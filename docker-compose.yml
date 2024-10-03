@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres1234
+      POSTGRES_DB: api_hospital
+    ports:
+      - "5432:5432"
+
+  account:
+    build:
+      context: ./account
+    container_name: "account"
+    ports:
+      - "8001:8000"
+    depends_on:
+      - postgres
+    environment:
+      DEBUG: "False"
+      DB_NAME: "api_hospital"
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres1234"
+      DB_HOST: "postgres"
+      DB_PORT: 5432
