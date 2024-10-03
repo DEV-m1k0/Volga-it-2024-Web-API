@@ -2,7 +2,7 @@
 
 1. Account URL: http://localhost:8001/api/swagger/
 
-2. Hospital URL: http://localhost:8082/ui-swagger
+2. Hospital URL: http://localhost:8002/api/swagger/
 
 3. Timetable URL: http://localhost:8083/ui-swagger
 
