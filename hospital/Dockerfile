@@ -10,6 +10,4 @@ RUN pip install -r requirements.txt
 
 CMD python manage.py makemigrations \
     && python manage.py migrate \
-    && python manage.py add_roles \
-    && python manage.py add_users \
-    && python manage.py runserver 0.0.0.0:8001
+    && python manage.py runserver 0.0.0.0:8002
