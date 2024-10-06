@@ -1,6 +1,8 @@
+from typing import Any
 from .permissions import AdminOrManagerPermission
 from rest_framework.request import Request
 from rest_framework.views import APIView
+from rest_framework import permissions
 from .logic import time_table, time_table_doctor, time_table_hospital
 
 
@@ -32,8 +34,19 @@ class TimeTableByDoctorAPIVIew(APIView):
     
 
 class TimeTableByHospitalAPIView(APIView):
-    permission_classes = [AdminOrManagerPermission]
-
+    permission_classes = []
+    
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == 'DELETE':
+            self.permission_classes = [AdminOrManagerPermission]
+        elif request.method == 'GET':
+            self.permission_classes = [permissions.IsAuthenticated]
+        return super().dispatch(request, *args, **kwargs)
+    
     def delete(self, request: Request, id: int):
         response = time_table_hospital.delete(request, id)
+        return response
+    
+    def get(self, request: Request, id: int):
+        response = time_table_hospital.get_timetable(request, id)
         return response
