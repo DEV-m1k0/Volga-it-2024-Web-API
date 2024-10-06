@@ -1,5 +1,6 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework import status
 from api.models import Hospital, Room
 
 
@@ -17,7 +18,7 @@ def get_all(request: Request):
         })
     
     else:
-        return Response({"server": "Больниц еще нет"})
+        return Response({"server": "Больниц еще нет"}, status=status.HTTP_404_NOT_FOUND)
     
 
 def get_info_by_id(request: Request, id: int):
@@ -29,12 +30,12 @@ def get_info_by_id(request: Request, id: int):
             "address": str(hospital.address),
             "contactPhone": str(hospital.contactPhone),
             "rooms": get_rooms(hospital=hospital)
-        })
+        }, status=status.HTTP_200_OK)
 
     except:
         return Response({
             "server": "Больницы нет"
-        })
+        }, status=status.HTTP_404_NOT_FOUND)
     
 
 def get_rooms(hospital: Hospital) -> list:
@@ -62,7 +63,7 @@ def hospital_create(request: Request):
     else:
         return Response({
             "SERVER_ERROR": "Не удалось добавить больницу. Пожалуйства, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
-        })
+        }, status=status.HTTP_400_BAD_REQUEST)
     
     return Response(response)
 
@@ -151,7 +152,7 @@ def update_hospital_by_id(request: Request, id: int):
     except:
         return Response({
             f"ERROR_{hospital.name}": "Больница не была обновлена. Пожалуйства, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
-        })
+        }, status=status.HTTP_400_BAD_REQUEST)
     
 
 def delete_hospital_by_id(request: Request, id: int):

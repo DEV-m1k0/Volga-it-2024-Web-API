@@ -6,6 +6,7 @@ from .logic.hospital import (get_all, get_rooms, get_info_by_id,
                              hospital_create, update_hospital_by_id,
                              delete_hospital_by_id)
 from .models import Hospital
+from rest_framework import status
 
 # Create your views here.
 
@@ -48,5 +49,5 @@ class RoomsByIdAPIView(APIView):
 
         return Response({
             "rooms": rooms
-        })
+        }, status=status.HTTP_200_OK)
     
