@@ -1,30 +1,24 @@
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework import status
-from ..models import MyUser
+from api.models import MyUser
 from .roles import add_role
-
 
 
 def update_user(request: Request, id=False):
     if id:
         user: MyUser = MyUser.objects.get(pk=id)
+
         response = update(user, request.data)
 
-        if f"ERROR_{user.username}" in response.keys():
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response(response, status=status.HTTP_200_OK)
+        return Response(response)
 
 
     else:
         user: MyUser = request.user
+
         response = update(user, request.data)
 
-        if f"ERROR_{user.username}" in response.keys():
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response(response, status=status.HTTP_200_OK)
+        return Response(response)
     
 
 def update(user: MyUser, data) -> dict:
@@ -33,10 +27,7 @@ def update(user: MyUser, data) -> dict:
 
         user.lastName=data['lastName']
         user.firstName=data['firstName']
-        try:
-            user.username=data['username']
-        except:
-            pass
+        user.username=data['username']
 
         user.set_password(data['password'])
 
@@ -57,4 +48,4 @@ def update(user: MyUser, data) -> dict:
         return response
     
     except:
-        return {f"ERROR_{user.username}": "Пользователь не был обновлен. Пожалуйста, проверьте корректность json"}
+        return {f"{user.username}": "Пользователь не был обновлен. Пожалуйста, проверьте корректность json"}
