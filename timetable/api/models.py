@@ -80,7 +80,7 @@ class Hospital(models.Model):
     address = models.CharField(max_length=100)
     contactPhone = models.CharField(max_length=11)
     rooms = models.ManyToManyField(Room, blank=True)
-    timetables = models.ManyToManyField(TimeTable)
+    timetables = models.ManyToManyField(TimeTable, blank=True)
 
     def __str__(self) -> str:
         return str(self.name)
