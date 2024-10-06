@@ -11,6 +11,7 @@ from .models import Hospital
 
 
 class HospitalsAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated,]
     def get(self, request: Request, id: int = False):
 
         if id:
@@ -40,7 +41,7 @@ class HospitalsAPIView(APIView):
         return response
 
 
-class RoomsByIdAPIVIew(APIView):
+class RoomsByIdAPIView(APIView):
     def get(self, request: Request, id: int):
         hospital = Hospital.objects.get(pk=id)
         rooms = get_rooms(hospital=hospital)

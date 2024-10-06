@@ -2,7 +2,7 @@
 
 
 from typing import Any
-from ..models import CHOICES_ROLE_FOR_MYUSER, MyUser, Role
+from api.models import CHOICES_ROLE_FOR_MYUSER, MyUser, Role
 
 
 # NOTE - функция для добавления роли
@@ -19,11 +19,6 @@ def add_role(user: MyUser, validate_data: dict[str, Any]):
         if check_role:
             roles = list(Role.objects.filter(role__in=validate_data['roles']))
             user.roles.set(roles)
-
-            if "Admin" in validate_data['roles']:
-                user.is_staff = True
-                user.is_superuser = True
-                user.save()
 
         else:
             response[f"{user}"] = "Роли не были добавлены. Убедитесь в корректности введенных ролей"

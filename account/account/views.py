@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.request import Request
 from django.http import HttpRequest
-from login.models import MyUser
-from login.logic.users import *
-from login.logic.update import update_user
+from api.models import MyUser
+from api.logic.users import *
+from api.logic.update import update_user
 
 
 

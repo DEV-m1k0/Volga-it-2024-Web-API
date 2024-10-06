@@ -1,48 +1,44 @@
 services:
-  postgres:
-    image: postgres:15
+  postgres-db:
+    image: postgres:15-alpine
     container_name: postgres15
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5434:5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres1234
       POSTGRES_DB: api_hospital
-    ports:
-      - 5432:5432
-
-  account:
-    build:
-      context: ./account
-    container_name: account
-    ports:
-      - 8001:8001
-    depends_on:
-      - postgres
-    environment:
-      DEBUG: False
-      DB_NAME: api_hospital
-      DB_USER: postgres
-      DB_PASSWORD: postgres1234
-      DB_HOST: postgres
-      DB_PORT: 5432
+      POSTGRES_HOST: postgres-db
+      POSTGRES_PORT: 5432
 
   hospital:
+    depends_on:
+      - postgres-db
     build:
       context: ./hospital
     container_name: hospital
     ports:
-      - 8002:8002
-    depends_on:
-      - postgres
-      - account
+      - 8002:8000
     environment:
       DEBUG: True
       DB_NAME: api_hospital
       DB_USER: postgres
       DB_PASSWORD: postgres1234
-      DB_HOST: postgres
+      DB_HOST: postgres-db
       DB_PORT: 5432
 
-volumes:
-  postgres_data:
+  account:
+    depends_on:
+      - postgres-db
+    build:
+      context: ./account
+    container_name: account
+    ports:
+      - 8001:8000
+    environment:
+      DEBUG: True
+      DB_NAME: api_hospital
+      DB_USER: postgres
+      DB_PASSWORD: postgres1234
+      DB_HOST: postgres-db
+      DB_PORT: 5432

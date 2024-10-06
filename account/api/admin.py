@@ -3,6 +3,5 @@ from .models import MyUser, Role
 
 # Register your models here.
 
-
 admin.site.register(MyUser)
 admin.site.register(Role)

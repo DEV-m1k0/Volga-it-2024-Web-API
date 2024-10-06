@@ -1,7 +1,7 @@
 # SECTION - Бизнес логика для классов предствления из микросервиса account
 
 
-from ..models import MyUser, ROLES, Role
+from api.models import MyUser, ROLES, Role
 from .roles import add_role
 from rest_framework.response import Response
 from django.http import HttpRequest
@@ -13,21 +13,20 @@ def add_users(request: HttpRequest, user: MyUser = MyUser):
     try:
         
         if isinstance(request.data, dict):
-            if request.data['password'] == "":
-                return Response(
-                    {"USER_PASSWORD_ERROR": "Пароль не может быть пустым!"},
-                    status=status.HTTP_400_BAD_REQUEST)
             response = add_one_user(user, request.data)
 
         elif isinstance(request.data, list):
             response = add_many_users(request.data)
-        
-        return Response(response, status=status.HTTP_207_MULTI_STATUS)
+
+        else:
+            return Response({'Server': 'Ошибка в синтаксисе json'})
+                
+        return Response(response)
     
 
     except:
         return Response(data={
-            "DATA_ERROR": 'Данные некорректны. Пожалуйста, убедитесь, что json корректен!'
+            "server": 'Неверные данные'
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -43,9 +42,6 @@ def add_many_users(data: list[MyUser]):
 
 def add_one_user(user: MyUser, validated_data: dict):
     try:
-        if validated_data['password'] == "":
-            return {f"{validated_data['username']}_PASSWORD_ERROR": "Пароль не может быть пустым!"}
-        
         response = {}
 
         user = user.objects.create(
@@ -54,7 +50,6 @@ def add_one_user(user: MyUser, validated_data: dict):
              username=validated_data['username']
              )
 
-        
         user.set_password(validated_data['password'])
 
         user.save()
@@ -69,13 +64,12 @@ def add_one_user(user: MyUser, validated_data: dict):
                     response["messages"] = response_from_roles
 
         except:
-            response[f"{user.username}_messages"] = "Ошибка при добавлении ролей. Скорее всего, ошибка в синтаксисе!"
-            return response
+            pass
         
         return response
 
     except:
-        return {f"{validated_data['username']}_USER_ERROR": "Пользователь не был добавлен. Скорее всего, пользователь с таким username уже существует или какое-то из полей написано не вернно!"}
+        return {f"{user.username}": "не был добавлен"}
         
 
 def delete(request: HttpRequest, id: int):
@@ -84,10 +78,10 @@ def delete(request: HttpRequest, id: int):
         username = str(user.username)
         user.delete()
 
-        return Response({f"{username}": "Успешно удален"}, status=status.HTTP_200_OK)
+        return Response({f"{username}": "Успешно удален"})
     
     except:
-        return Response({"SERVER_NOT_FOUND": "Пользователь не найден"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"server": "Пользователь не найден"})
 
 
 def filter_users(request: request.Request, user_role: str):
@@ -97,7 +91,6 @@ def filter_users(request: request.Request, user_role: str):
             filter_users = MyUser.objects.filter(roles__in=role)
             user = filter_users[0]
 
-
             return Response({
                 "nameFilter": user.get_full_name,
                 "from": user.pk,
@@ -105,29 +98,25 @@ def filter_users(request: request.Request, user_role: str):
                 }, status=status.HTTP_200_OK)
 
         except:
-            return Response({
-                "SERVER_NOT_FOUND": "Сервер не нашел пользователей с данной ролью. Скорее всего, пользователь с такой ролью не существует."
-                }, status=status.HTTP_404_NOT_FOUND)
+            print('Ошибка при фильтрации')
 
 
 def get_info(user: MyUser):
-    try:
-        role_list = []
 
+    role_list = []
+    try:
         for role in user.roles.all():
             role_list.append(role.role)
 
-        return Response({
+    except:
+        pass
+
+    return Response({
         "lastName": str(user.lastName),
         "firstName": str(user.firstName),
         "username": str(user.username),
         "roles": role_list
         })
-
-    except:
-        return Response({"ERROR_ROLE": "Ошибка при получении ролей."}, status=status.HTTP_400_BAD_REQUEST)
-
-    
 
 
 def get_users_by_role(request_role: str):
