@@ -1,9 +1,10 @@
 from typing import Any
-from .permissions import AdminOrManagerPermission
+from .permissions import AdminOrManagerPermission, AdminOrManagerOrDoctorPermission
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework import permissions
 from .logic import time_table, time_table_doctor, time_table_hospital
+from .models import MyUser
 
 
 # Create your views here.
@@ -61,4 +62,11 @@ class TimeTableByHospitalAPIView(APIView):
     
     def get(self, request: Request, id: int):
         response = time_table_hospital.get_timetable(request, id)
+        return response
+    
+
+class TimeTableByRoomAPIView(APIView):
+    permission_classes = [AdminOrManagerOrDoctorPermission]
+    def get(self, request: Request, id: int, room: str):
+        response = time_table_hospital.get_timetable_by_room(request, id, room)
         return response

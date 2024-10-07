@@ -30,41 +30,19 @@ class Role(models.Model):
         return str(self.role)
 
 
-
-
-
-    @property
-    def get_full_name(self) -> str:
-        """
-        #### Свойство, возвращающее полное имя пользователя.
-        """
-        return f"{self.lastName} {self.firstName}"
-
-
 class Room(models.Model):
     room = models.CharField(max_length=50, unique=True)
+    timetables = models.ManyToManyField('TimeTable', blank=True)
 
     def __str__(self) -> str:
         return str(self.room)
-    
-
-class TimeTable(models.Model):
-    hospitalId = models.PositiveIntegerField()
-    doctorId = models.PositiveIntegerField()
-    date_from = models.DateTimeField()
-    date_to = models.DateTimeField()
-    room = models.CharField(max_length=50)
-
-    def __str__(self) -> str:
-        return f"from: {self.date_from} to: {self.date_to}"
-    
 
 class Hospital(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
     contactPhone = models.CharField(max_length=11)
     rooms = models.ManyToManyField(Room, blank=True)
-    timetables = models.ManyToManyField(TimeTable, blank=True)
+    timetables = models.ManyToManyField('TimeTable', blank=True)
 
     def __str__(self) -> str:
         return str(self.name)
@@ -84,7 +62,23 @@ class MyUser(AbstractUser):
     lastName = models.CharField(max_length=30)
     firstName = models.CharField(max_length=30)
     roles = models.ManyToManyField(Role, blank=True, serialize=True)
-    time_table = models.ManyToManyField(TimeTable, blank=True)
 
     def __str__(self) -> str:
         return str(self.username)
+    
+    @property
+    def get_full_name(self) -> str:
+        """
+        #### Свойство, возвращающее полное имя пользователя.
+        """
+        return f"{self.lastName} {self.firstName}"
+    
+class TimeTable(models.Model):
+    hospitalId = models.ForeignKey(Hospital, blank=True, on_delete=models.CASCADE)
+    doctorId = models.ForeignKey(MyUser, blank=True, on_delete=models.CASCADE)
+    date_from = models.DateTimeField()
+    date_to = models.DateTimeField()
+    id_room = models.ForeignKey(Room, blank=True, null=True, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"from: {self.date_from} to: {self.date_to}"
