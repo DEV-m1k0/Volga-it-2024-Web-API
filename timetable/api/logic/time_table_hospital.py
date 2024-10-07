@@ -27,8 +27,15 @@ def get_timetable(request: HttpRequest, id: int):
 
         response = {}
 
+        print(list_dates)
+
         for id_date in range(1, len(list_dates)+1):
-            response[id_date] = list_dates[id_date-1]
+            time_table = list_dates[id_date-1]
+            response[id_date] = {
+                                "from": f"{time_table[0]}",
+                                "to": f"{time_table[1]}"
+                                }
+            pass
 
         return Response({
             f"{hospital.name}": response
