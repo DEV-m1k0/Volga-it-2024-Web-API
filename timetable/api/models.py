@@ -30,23 +30,7 @@ class Role(models.Model):
         return str(self.role)
 
 
-class MyUser(AbstractUser):
-    """
-    ### Основная модель пользователей.
-    Данная модель наследует от базового AbstractUser, добавляя поля:
-    <ul>
-        <li>lastName</li>
-        <li>firstName</li>
-        <li>roles</li>
-    </ul>
-    """
 
-    lastName = models.CharField(max_length=30)
-    firstName = models.CharField(max_length=30)
-    roles = models.ManyToManyField(Role, blank=True, serialize=True)
-
-    def __str__(self) -> str:
-        return str(self.username)
 
 
     @property
@@ -84,3 +68,23 @@ class Hospital(models.Model):
 
     def __str__(self) -> str:
         return str(self.name)
+    
+
+class MyUser(AbstractUser):
+    """
+    ### Основная модель пользователей.
+    Данная модель наследует от базового AbstractUser, добавляя поля:
+    <ul>
+        <li>lastName</li>
+        <li>firstName</li>
+        <li>roles</li>
+    </ul>
+    """
+
+    lastName = models.CharField(max_length=30)
+    firstName = models.CharField(max_length=30)
+    roles = models.ManyToManyField(Role, blank=True, serialize=True)
+    time_table = models.ManyToManyField(TimeTable, blank=True)
+
+    def __str__(self) -> str:
+        return str(self.username)

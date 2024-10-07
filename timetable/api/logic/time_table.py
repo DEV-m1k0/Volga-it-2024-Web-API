@@ -4,7 +4,7 @@ from rest_framework import status
 from api.models import TimeTable
 from api.models import MyUser, Role
 from api.models import Hospital, Room
-from datetime import datetime, timezone
+from .date import check_date, parse_date
 
 
 def create_time_table(request: Request):
@@ -73,48 +73,6 @@ def check_room(request_room: str):
 
     except:
         return False
-
-
-def parse_date(request_from: str, request_to: str):
-    # Проверка формата дат
-    try:
-        from_dt = datetime.strptime(request_from, '%Y-%m-%dT%H:%M:%SZ')
-        to_dt = datetime.strptime(request_to, '%Y-%m-%dT%H:%M:%SZ')
-    except ValueError:
-        return False
-    
-    # Проверка времени от и до
-    if not ((from_dt.minute % 30 == 0) and (from_dt.second == 0)):
-        return False
-    if not ((to_dt.minute % 30 == 0) and (to_dt.second == 0)):
-        return False
-    
-    # Проверка интервала между датами
-    if from_dt > to_dt:
-        return False
-    
-    diff = to_dt - from_dt
-    hours_diff = diff.total_seconds() / 60 ** 2
-
-    if hours_diff <= 12:
-        return True, from_dt, to_dt
-    
-    return False
-
-
-def check_date(time_from: datetime, time_to: datetime):
-    time_table_all = TimeTable.objects.all()
-
-    for time_table in time_table_all:
-        date_from_by_db = datetime.fromisoformat(str(time_table.date_from)).astimezone(timezone.utc)
-        date_to_by_db = datetime.fromisoformat(str(time_table.date_to)).astimezone(timezone.utc)
-        time_from_by_request = time_from.astimezone(timezone.utc)
-        time_to_by_request = time_to.astimezone(timezone.utc)
-        
-        if (date_from_by_db <= time_from_by_request <= date_to_by_db) or (date_from_by_db <= time_to_by_request <= date_to_by_db):
-            return False
-        
-    return True
 
 
 def check_hospital_by_id(id: int):

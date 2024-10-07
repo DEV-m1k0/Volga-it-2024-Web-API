@@ -27,7 +27,19 @@ class TimeTableAPIView(APIView):
     
 
 class TimeTableByDoctorAPIVIew(APIView):
-    permission_classes = [AdminOrManagerPermission]
+    permission_classes = []
+
+    def despatch(self, request, *args, **kwargs):
+        if request.method == 'GET':
+            self.permission_classes = [permissions.IsAuthenticated]
+        elif request.method == 'DELETE':
+            self.permission_classes = [AdminOrManagerPermission]
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request: Request, id: int):
+        response = time_table_doctor.get_timetable(request, id)
+        return response
+
     def delete(self, request: Request, id: int):
         response = time_table_doctor.delete_time_table(id)
         return response

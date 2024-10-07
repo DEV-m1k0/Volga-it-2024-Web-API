@@ -2,13 +2,14 @@ from django.http.request import HttpRequest
 from rest_framework.response import Response
 from api.models import Hospital
 from rest_framework import status
-from django.utils import timezone
-from api.models import TimeTable
+from .date import time_to_iso8601
+
 
 def delete(request: HttpRequest, id: int):
     try:
         hospital = Hospital.objects.get(pk=id)
         hospital.timetables.all().delete()
+
         return Response({
             f"{hospital.name}": "Расписание удалено успешно!"
         }, status=status.HTTP_200_OK)
@@ -34,15 +35,3 @@ def get_timetable(request: HttpRequest, id: int):
         }, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"status": f"{e}"})
-    
-
-def time_to_iso8601(dates: list[TimeTable]) -> list[str]:
-    correct_date = []
-    
-    for date in dates:
-        date_from = str(timezone.datetime.isoformat(date.date_from)).split('+')[0]+'Z'
-        date_to = str(timezone.datetime.isoformat(date.date_to)).split('+')[0]+'Z'
-        correct_date.append([date_from, date_to])
-
-
-    return correct_date
