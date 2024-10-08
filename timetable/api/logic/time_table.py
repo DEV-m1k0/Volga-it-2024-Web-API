@@ -18,22 +18,26 @@ def create_time_table(request: Request):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         time_table = TimeTable.objects.create(
-            hospitalId=hospitalId,
-            doctorId=doctorId,
+            hospitalId=Hospital.objects.get(pk=hospitalId),
+            doctorId=MyUser.objects.get(pk=doctorId),
             date_from=date_from,
             date_to=date_to,
-            room=room
+            id_room=Room.objects.get(room=room)
         )
 
         hospital = Hospital.objects.get(pk=hospitalId)
         hospital.timetables.add(time_table)
         hospital.save()
 
+        room = Room.objects.get(room=room)
+        room.timetables.add(time_table)
+
         return Response({
             "server": "Запись успешно добавлена"
             }, status=status.HTTP_200_OK)
 
-    except:
+    except Exception as e:
+        print(e)
         return Response({
             "SERVER_ERROR": "Расписание не было добавлено. Пожалуйства, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
         }, status=status.HTTP_400_BAD_REQUEST)
@@ -107,30 +111,42 @@ def check_doctor_by_id(id: int) -> bool:
 def update_time_table(request: Request, id: int) -> Response:
     try:
 
+        room = Room.objects.get(room=request.data['room'])
+
+        if not Hospital.objects.filter(pk=request.data['hospitalId'], rooms=room).exists():
+            raise Exception(f"Комната {request.data['room']} в данной больнице не найдена")
+
         time_table = TimeTable.objects.get(pk=id)
 
-        hospitalId, doctorId, date_from, date_to, room = check_valid_data_for_time_table(request=request)
+        time_table.id_room.timetables.remove(time_table)
 
-        if not check_date(time_from=date_from, time_to=date_to):
+        hospitalId, doctorId, date_from, date_to, room = check_valid_data_for_time_table(request=request)
+        if not check_date(room=room, time_from=date_from, time_to=date_to):
             return Response({
                 "DATE_ERROR": "Запись на прием не была обновлена. Пожалуйста, убедитесь, что вы не пытаетсь обновить запись на число, которое уже занято"
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        time_table.hospitalId=hospitalId
-        time_table.doctorId=doctorId
+        time_table.hospitalId=Hospital.objects.get(pk=hospitalId)
+        time_table.doctorId=MyUser.objects.get(pk=doctorId)
         time_table.date_from=date_from
         time_table.date_to=date_to
-        time_table.room=room
+        time_table.id_room=Room.objects.get(room=room)
+
+        Room.objects.get(room=time_table.id_room).timetables.remove(time_table)
+
+        room = Room.objects.get(room=room)
+        room.timetables.add(time_table)
 
         time_table.save()
 
         return Response({
-            f"{time_table.room}": f"Запись успешно была обновлена"
+            f"{time_table.id_room}": f"Запись успешно была обновлена"
         }, status=status.HTTP_200_OK)
     
-    except:
+    except Exception as e:
+        print(e)
         return Response({
-            "SERVER_ERROR": "Расписание не было обнавлено. Пожалуйста, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
+            "SERVER_ERROR": f"Расписание не было обнавлено!"
         }, status=status.HTTP_400_BAD_REQUEST)
     
 

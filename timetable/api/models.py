@@ -32,6 +32,7 @@ class Role(models.Model):
 
 class Room(models.Model):
     room = models.CharField(max_length=50, unique=True)
+    id_hospital = models.ForeignKey('Hospital', blank=True, null=True, on_delete=models.CASCADE)
     timetables = models.ManyToManyField('TimeTable', blank=True)
 
     def __str__(self) -> str:
