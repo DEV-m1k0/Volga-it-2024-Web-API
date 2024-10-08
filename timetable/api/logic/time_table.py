@@ -121,7 +121,7 @@ def update_time_table(request: Request, id: int) -> Response:
         time_table.id_room.timetables.remove(time_table)
 
         hospitalId, doctorId, date_from, date_to, room = check_valid_data_for_time_table(request=request)
-        if not check_date(room=room, time_from=date_from, time_to=date_to):
+        if not check_date(time_from=date_from, time_to=date_to):
             return Response({
                 "DATE_ERROR": "Запись на прием не была обновлена. Пожалуйста, убедитесь, что вы не пытаетсь обновить запись на число, которое уже занято"
             }, status=status.HTTP_400_BAD_REQUEST)

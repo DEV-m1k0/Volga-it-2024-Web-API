@@ -9,16 +9,15 @@ def get_timetable(request, id):
         response = {}
 
         doctor: MyUser = get_users_by_role("Doctor").get(pk=id)
-        all_timetables_for_doctor = time_to_iso8601(doctor.time_table.all())
 
-        print(all_timetables_for_doctor)
+        list_by_timetables = TimeTable.objects.filter(doctorId=doctor)
+        all_timetables_for_doctor = time_to_iso8601(list_by_timetables)
 
         for id_time_table in range(1, len(all_timetables_for_doctor)+1):
             time_table = all_timetables_for_doctor[id_time_table-1]
             response[f'{id_time_table}'] = {"from": f"{time_table[0]}",
                                             "to": f"{time_table[1]}"}
 
-        
         return Response(response)
 
     except:

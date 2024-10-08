@@ -5,7 +5,7 @@ from api.models import Room
 
 def time_to_iso8601(dates: list[TimeTable]) -> list[str]:
     correct_date = []
-    
+
     for date in dates:
         date_from = str(timezone.datetime.isoformat(date.date_from)).split('+')[0]+'Z'
         date_to = str(timezone.datetime.isoformat(date.date_to)).split('+')[0]+'Z'
@@ -42,10 +42,8 @@ def parse_date(request_from: str, request_to: str):
     return False
 
 
-def check_date(room: Room, time_from: datetime, time_to: datetime):
+def check_date(time_from: datetime, time_to: datetime):
     time_table_all = TimeTable.objects.all()
-
-    # print(room.timetables.all())
 
     for time_table in time_table_all:
         date_from_by_db = datetime.fromisoformat(str(time_table.date_from)).astimezone(timezone.utc)
