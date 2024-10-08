@@ -46,18 +46,24 @@ def get_timetable_by_room(request: HttpRequest, id: int, room: str):
         response = {}
 
         get_room = Room.objects.get(room=room)
-        hospital = Hospital.objects.get(rooms=get_room)
-        list_dates = time_to_iso8601(hospital.timetables.all())
+        hospital = Hospital.objects.get(pk=id)
+
+        if not get_room in hospital.rooms.all():
+            return Response({
+                "SERVER_ERROR": f"Комната: {room} не принадлежит больнице!"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        list_dates = time_to_iso8601(get_room.timetables.all())
 
         for id_date in range(1, len(list_dates)+1):
             time_table = list_dates[id_date-1]
-            response[get_room.room] = {f'{id_date}': {
+            response[f'{id_date}'] = {
                                 "from": f"{time_table[0]}",
                                 "to": f"{time_table[1]}"
-                                }}
+                                }
 
         return Response({
-            f"{hospital.name}": response
+            f"{hospital.name}": {f"{get_room.room}": response}
         }, status=status.HTTP_200_OK)
     
     except:
