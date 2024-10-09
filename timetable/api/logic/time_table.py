@@ -4,7 +4,8 @@ from rest_framework import status
 from api.models import TimeTable
 from api.models import MyUser, Role
 from api.models import Hospital, Room
-from .date import check_date, parse_date
+from .date import (check_date, parse_date, time_to_iso8601_from_db,
+                   get_appointments, time_to_iso8601)
 
 
 def create_time_table(request: Request):
@@ -162,4 +163,37 @@ def delete_time_table(id: int) -> Response:
     except:
         return Response({
             "SERVER_ERROR": "Расписание не было Удалено. Пожалуйста, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+
+def get_appointment_by_timetable_id(id: int) -> Response:
+    try:
+        response = {}
+
+        time_table = TimeTable.objects.get(pk=id)
+        date_time = time_to_iso8601_from_db([time_table])[0]
+
+        try:
+            answer, datetime_from, datetime_to = parse_date(date_time[0], date_time[1])
+
+        except Exception as e:
+            print(e)
+            return Response({
+                "SERVER_ERROR": "Не корректное расписание"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if answer:
+            appointments = get_appointments(datetime_from, datetime_to)
+
+            for i in range(len(appointments)):
+                response[f"Талончик: {i+1}"] = time_to_iso8601(appointments[i])
+
+        return Response({
+            "Рассписание": response
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        print(e)
+        return Response({
+            "SERVER_ERROR": "Запись с расписанием не найдена!"
         }, status=status.HTTP_400_BAD_REQUEST)

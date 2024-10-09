@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from api.models import TimeTable, MyUser
 from api.logic.users import get_users_by_role
-from .date import time_to_iso8601
+from .date import time_to_iso8601_from_db
 
 def get_timetable(request, id):
     try:
@@ -11,7 +11,7 @@ def get_timetable(request, id):
         doctor: MyUser = get_users_by_role("Doctor").get(pk=id)
 
         list_by_timetables = TimeTable.objects.filter(doctorId=doctor)
-        all_timetables_for_doctor = time_to_iso8601(list_by_timetables)
+        all_timetables_for_doctor = time_to_iso8601_from_db(list_by_timetables)
 
         for id_time_table in range(1, len(all_timetables_for_doctor)+1):
             time_table = all_timetables_for_doctor[id_time_table-1]

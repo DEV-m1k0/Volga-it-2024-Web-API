@@ -1,9 +1,9 @@
 from django.utils import timezone
 from api.models import TimeTable
-from datetime import datetime
+from datetime import datetime, timedelta
 from api.models import Room
 
-def time_to_iso8601(dates: list[TimeTable]) -> list[str]:
+def time_to_iso8601_from_db(dates: list[TimeTable]) -> list[str]:
     correct_date = []
 
     for date in dates:
@@ -11,8 +11,11 @@ def time_to_iso8601(dates: list[TimeTable]) -> list[str]:
         date_to = str(timezone.datetime.isoformat(date.date_to)).split('+')[0]+'Z'
         correct_date.append([date_from, date_to])
 
-
     return correct_date
+
+
+def time_to_iso8601(date: datetime):
+    return str(timezone.datetime.isoformat(date)).split('+')[0]+'Z'
 
 
 def parse_date(request_from: str, request_to: str):
@@ -55,3 +58,14 @@ def check_date(time_from: datetime, time_to: datetime):
             return False
         
     return True
+
+
+def get_appointments(datetime_from: datetime, datetime_to: datetime) -> list[datetime]:
+    list_appointments = []
+    time_appointment = datetime_from
+
+    while time_appointment <= datetime_to:
+        list_appointments.append(time_appointment)
+        time_appointment += timedelta(minutes=30)
+
+    return list_appointments

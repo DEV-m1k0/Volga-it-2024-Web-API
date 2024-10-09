@@ -32,7 +32,7 @@ class Role(models.Model):
 
 class Room(models.Model):
     room = models.CharField(max_length=50, unique=True)
-    id_hospital = models.ForeignKey('Hospital', blank=True, on_delete=models.CASCADE)
+    id_hospital = models.ManyToManyField('Hospital', blank=True)
     timetables = models.ManyToManyField('TimeTable', blank=True)
 
     def __str__(self) -> str:
@@ -60,19 +60,11 @@ class MyUser(AbstractUser):
     </ul>
     """
 
-    lastName = models.CharField(max_length=30)
-    firstName = models.CharField(max_length=30)
     roles = models.ManyToManyField(Role, blank=True, serialize=True)
 
     def __str__(self) -> str:
         return str(self.username)
-    
-    @property
-    def get_full_name(self) -> str:
-        """
-        #### Свойство, возвращающее полное имя пользователя.
-        """
-        return f"{self.lastName} {self.firstName}"
+
     
 class TimeTable(models.Model):
     hospitalId = models.ForeignKey(Hospital, blank=True, on_delete=models.CASCADE)

@@ -4,6 +4,7 @@
 
 
 ### Data ###
+.vscode
 *.csv
 *.dat
 *.efx

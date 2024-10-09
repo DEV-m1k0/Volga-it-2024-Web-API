@@ -4,7 +4,6 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework import permissions
 from .logic import time_table, time_table_doctor, time_table_hospital
-from .models import MyUser
 
 
 # Create your views here.
@@ -69,4 +68,12 @@ class TimeTableByRoomAPIView(APIView):
     permission_classes = [AdminOrManagerOrDoctorPermission]
     def get(self, request: Request, id: int, room: str):
         response = time_table_hospital.get_timetable_by_room(request, id, room)
+        return response
+    
+from rest_framework.response import Response
+
+class AppointmentsByTimetableAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request: Request, id: int):
+        response = time_table.get_appointment_by_timetable_id(id)
         return response

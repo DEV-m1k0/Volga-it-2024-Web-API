@@ -20,6 +20,16 @@ CHOICES_ROLE_FOR_MYUSER = [
 ROLES = ['Admin', 'Manager', 'Doctor', 'User']
 
 
+class Apointment(models.Model):
+    """
+    #### Модель для хранения информации о приёмах.
+    """
+    time = models.DateTimeField()
+
+    def __str__(self) -> str:
+        return f"{self.time}"
+
+
 class Role(models.Model):
     """
     #### Модель для хранения ролей пользователей.
@@ -32,8 +42,8 @@ class Role(models.Model):
 
 class Room(models.Model):
     room = models.CharField(max_length=50, unique=True)
-    id_hospital = models.ForeignKey('Hospital', blank=True, null=True, on_delete=models.CASCADE)
-    timetables = models.ManyToManyField('TimeTable', blank=True)
+    hospitals = models.ManyToManyField('Hospital', blank=True)
+    id_timetable = models.ForeignKey('TimeTable', on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self) -> str:
         return str(self.room)
@@ -60,19 +70,11 @@ class MyUser(AbstractUser):
     </ul>
     """
 
-    lastName = models.CharField(max_length=30)
-    firstName = models.CharField(max_length=30)
     roles = models.ManyToManyField(Role, blank=True, serialize=True)
 
     def __str__(self) -> str:
         return str(self.username)
-    
-    @property
-    def get_full_name(self) -> str:
-        """
-        #### Свойство, возвращающее полное имя пользователя.
-        """
-        return f"{self.lastName} {self.firstName}"
+
     
 class TimeTable(models.Model):
     hospitalId = models.ForeignKey(Hospital, blank=True, on_delete=models.CASCADE)
@@ -80,6 +82,7 @@ class TimeTable(models.Model):
     date_from = models.DateTimeField()
     date_to = models.DateTimeField()
     id_room = models.ForeignKey(Room, blank=True, null=True, on_delete=models.CASCADE)
+    appointments = models.ManyToManyField(Apointment, blank=True)
 
     def __str__(self) -> str:
         return f"from: {self.date_from} to: {self.date_to}"
