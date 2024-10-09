@@ -73,7 +73,11 @@ class TimeTableByRoomAPIView(APIView):
 from rest_framework.response import Response
 
 class AppointmentsByTimetableAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     def get(self, request: Request, id: int):
-        response = time_table.get_appointment_by_timetable_id(id)
+        response = time_table.get_appointment(id)
+        return response
+    
+    def post(self, request: Request, id: int):
+        response = time_table.create_appointment(request, id)
         return response
