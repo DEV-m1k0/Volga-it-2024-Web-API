@@ -1,5 +1,5 @@
 from typing import Any
-from .permissions import AdminOrManagerPermission, AdminOrManagerOrDoctorPermission
+from .permissions import *
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework import permissions
@@ -70,14 +70,21 @@ class TimeTableByRoomAPIView(APIView):
         response = time_table_hospital.get_timetable_by_room(request, id, room)
         return response
     
-from rest_framework.response import Response
-
 class AppointmentsByTimetableAPIView(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
+
     def get(self, request: Request, id: int):
         response = time_table.get_appointment(id)
         return response
     
     def post(self, request: Request, id: int):
         response = time_table.create_appointment(request, id)
+        return response
+    
+
+class DeleteAppointmentByIdAPIView(APIView):
+    permission_classes = [AdminOrManagerOrPacientPermission]
+
+    def delete(self, request: Request, id: int):
+        response = time_table.delete_appointment(id)
         return response

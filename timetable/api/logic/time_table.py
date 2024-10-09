@@ -168,7 +168,7 @@ def delete_time_table(id: int) -> Response:
 def get_appointment(id: int) -> Response:
     try:
         response = {}
-        appointments = Apointment.objects.all()
+        appointments = Appointment.objects.all()
 
         if appointments.exists():
             for i in range(len(appointments)):
@@ -198,12 +198,8 @@ def create_appointment(request: Request, timetable_id: int) -> Response:
         if not time_tables.exists():
             raise Exception(f"Расписание с id {timetable_id} не найдено")
 
-        appointments = Apointment.objects.all()
+        appointments = Appointment.objects.all()
 
-        print(time_table.date_from)
-        print(time_table.date_to)
-
-        
         if appointments.exists():
             for i in range(len(appointments)):
                 if appointments[i].time == datetime.fromisoformat(request.data['time']):
@@ -213,15 +209,38 @@ def create_appointment(request: Request, timetable_id: int) -> Response:
             raise Exception(f"Запись на этот час не может быть создана. Она находится за диапазоном дат")
 
 
-        Apointment.objects.create(
+        appointment = Appointment.objects.create(
             time=request.data['time']
         )
+
+        user = MyUser.objects.get(username=request.user)
+        user.appointments.add(appointment)
+        user.save()
+
+        time_table.appointments.add(appointment)
+        time_table.save()
+
         return Response({
-            f"": f"Запись успешно добавлена"
+            "SERVER": "Запись успешно добавлена"
         }, status=status.HTTP_200_OK)
 
     except Exception as e:
         print(e)
         return Response({
             "SERVER_ERROR": f"Запись не была добавлена! {e}"
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+
+def delete_appointment(id: int) -> Response:
+    try:
+        appointment = Appointment.objects.get(pk=id)
+        appointment.delete()
+
+        return Response({
+            "SERVRER": "Запись была успешно удалена"
+        })
+
+    except:
+        return Response({
+            "SERVER_ERROR": "Запись не была удалена. Скорее всего, такой записи нет"
         }, status=status.HTTP_400_BAD_REQUEST)

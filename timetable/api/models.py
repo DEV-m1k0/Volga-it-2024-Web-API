@@ -20,7 +20,7 @@ CHOICES_ROLE_FOR_MYUSER = [
 ROLES = ['Admin', 'Manager', 'Doctor', 'User']
 
 
-class Apointment(models.Model):
+class Appointment(models.Model):
     """
     #### Модель для хранения информации о приёмах.
     """
@@ -71,6 +71,7 @@ class MyUser(AbstractUser):
     """
 
     roles = models.ManyToManyField(Role, blank=True, serialize=True)
+    appointments = models.ManyToManyField(Appointment, blank=True)
 
     def __str__(self) -> str:
         return str(self.username)
@@ -82,7 +83,7 @@ class TimeTable(models.Model):
     date_from = models.DateTimeField()
     date_to = models.DateTimeField()
     id_room = models.ForeignKey(Room, blank=True, null=True, on_delete=models.CASCADE)
-    appointments = models.ManyToManyField(Apointment, blank=True)
+    appointments = models.ManyToManyField(Appointment, blank=True)
 
     def __str__(self) -> str:
         return f"from: {self.date_from} to: {self.date_to}"
