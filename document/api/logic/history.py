@@ -5,6 +5,22 @@ from api.models import History, MyUser, Hospital, Room
 from . import date, validate_data
 
 
+def get_history(id):
+    try:
+        history = History.objects.get(pk=id)
+        return Response({
+            "id": history.pk,
+            "pacientId": history.pacientId.pk,
+            "hospitalId": history.hospitalId.pk,
+            "doctorId": history.doctorId.pk,
+            "room": history.room.room,
+            "date": history.date,
+            "data": history.data,
+        }, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response({"error": "История с таким ID не найдена"}, status=status.HTTP_404_NOT_FOUND)
+
 def post_history(request: Request):
     try:
 
