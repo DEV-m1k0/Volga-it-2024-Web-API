@@ -13,3 +13,17 @@ class AdminOrManagerOrDoctorPermission(BasePermission):
         
     def has_permission(self, request, view):
         return self.has_object_permission(request, view, None)
+    
+
+class DoctorOrPacientPermission(BasePermission):
+    message = "Этот класс доступен только для врачей и пациентов."
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.roles.filter(role='Doctor').exists():
+            return True
+        elif request.user.roles.filter(role='User').exists() and request.user.appointments.all().exists():
+            return True
+        
+
+    def has_permission(self, request, view):
+        return self.has_object_permission(request, view, None)

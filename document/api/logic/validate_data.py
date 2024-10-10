@@ -1,5 +1,27 @@
 from api import models
 from datetime import datetime
+from .date import parse_one_date
+
+def check_doctor(id):
+    try:
+        doctor = models.MyUser.objects.get(pk=id)
+
+        if doctor.roles.all().get(role='Doctor'):
+            return True
+        return False
+    
+    except:
+        return False
+
+
+def check_data(data: dict) -> bool:
+    try:
+        if 'pacientId' not in data or 'hospitalId' not in data or 'doctorId' not in data or 'room' not in data or 'date' not in data or 'data' not in data:
+            return False
+        answer, _ = parse_one_date(data['date'])
+        return answer
+    except:
+        return False
 
 def validate_pacient(pacient_id: int, date: datetime) -> bool:
     try:
