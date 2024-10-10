@@ -45,8 +45,8 @@ def add_one_user(user: MyUser, validated_data: dict):
         response = {}
 
         user = user.objects.create(
-             lastName=validated_data['lastName'],
-             firstName=validated_data['firstName'],
+             last_name=validated_data['lastName'],
+             first_name=validated_data['firstName'],
              username=validated_data['username']
              )
 

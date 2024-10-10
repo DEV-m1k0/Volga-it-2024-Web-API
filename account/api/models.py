@@ -54,8 +54,6 @@ class MyUser(AbstractUser):
     ### Основная модель пользователей.
     Данная модель наследует от базового AbstractUser, добавляя поля:
     <ul>
-        <li>lastName</li>
-        <li>firstName</li>
         <li>roles</li>
     </ul>
     """

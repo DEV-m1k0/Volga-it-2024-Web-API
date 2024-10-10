@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'drf_spectacular',
 
     # Приложения микросервиса
     'api'
@@ -95,10 +96,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'timetable.urls'
 
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
