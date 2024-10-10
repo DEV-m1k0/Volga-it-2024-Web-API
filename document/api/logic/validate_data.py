@@ -14,6 +14,18 @@ def validate_pacient(pacient_id: int, date: datetime) -> bool:
         return False
     
 
+def check_pacient(id: int) -> bool:
+    try:
+        pacient = models.MyUser.objects.get(pk=id)
+
+        if pacient.appointments.exists():
+            return True
+        return False
+
+    except:
+        return False
+
+
 def check_hospital(hospital_id: int) -> bool:
     try:
         hospital = models.Hospital.objects.get(pk=hospital_id)
