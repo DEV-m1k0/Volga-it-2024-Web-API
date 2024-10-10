@@ -1,10 +1,10 @@
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
-from api.models import TimeTable
-from api.models import MyUser, Role
-from api.models import Hospital, Room
-from datetime import datetime, timezone
+from api.models import *
+from .date import (check_date, parse_date, time_to_iso8601_from_db,
+                   get_appointments, time_to_iso8601)
+from datetime import datetime
 
 
 def create_time_table(request: Request):
@@ -18,22 +18,26 @@ def create_time_table(request: Request):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         time_table = TimeTable.objects.create(
-            hospitalId=hospitalId,
-            doctorId=doctorId,
+            hospitalId=Hospital.objects.get(pk=hospitalId),
+            doctorId=MyUser.objects.get(pk=doctorId),
             date_from=date_from,
             date_to=date_to,
-            room=room
+            id_room=Room.objects.get(room=room)
         )
 
         hospital = Hospital.objects.get(pk=hospitalId)
         hospital.timetables.add(time_table)
         hospital.save()
 
+        room = Room.objects.get(room=room)
+        room.timetables.add(time_table)
+
         return Response({
             "server": "Запись успешно добавлена"
             }, status=status.HTTP_200_OK)
 
-    except:
+    except Exception as e:
+        print(e)
         return Response({
             "SERVER_ERROR": "Расписание не было добавлено. Пожалуйства, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
         }, status=status.HTTP_400_BAD_REQUEST)
@@ -75,48 +79,6 @@ def check_room(request_room: str):
         return False
 
 
-def parse_date(request_from: str, request_to: str):
-    # Проверка формата дат
-    try:
-        from_dt = datetime.strptime(request_from, '%Y-%m-%dT%H:%M:%SZ')
-        to_dt = datetime.strptime(request_to, '%Y-%m-%dT%H:%M:%SZ')
-    except ValueError:
-        return False
-    
-    # Проверка времени от и до
-    if not ((from_dt.minute % 30 == 0) and (from_dt.second == 0)):
-        return False
-    if not ((to_dt.minute % 30 == 0) and (to_dt.second == 0)):
-        return False
-    
-    # Проверка интервала между датами
-    if from_dt > to_dt:
-        return False
-    
-    diff = to_dt - from_dt
-    hours_diff = diff.total_seconds() / 60 ** 2
-
-    if hours_diff <= 12:
-        return True, from_dt, to_dt
-    
-    return False
-
-
-def check_date(time_from: datetime, time_to: datetime):
-    time_table_all = TimeTable.objects.all()
-
-    for time_table in time_table_all:
-        date_from_by_db = datetime.fromisoformat(str(time_table.date_from)).astimezone(timezone.utc)
-        date_to_by_db = datetime.fromisoformat(str(time_table.date_to)).astimezone(timezone.utc)
-        time_from_by_request = time_from.astimezone(timezone.utc)
-        time_to_by_request = time_to.astimezone(timezone.utc)
-        
-        if (date_from_by_db <= time_from_by_request <= date_to_by_db) or (date_from_by_db <= time_to_by_request <= date_to_by_db):
-            return False
-        
-    return True
-
-
 def check_hospital_by_id(id: int):
     try:
         hospital = Hospital.objects.get(pk=id)
@@ -149,30 +111,42 @@ def check_doctor_by_id(id: int) -> bool:
 def update_time_table(request: Request, id: int) -> Response:
     try:
 
+        room = Room.objects.get(room=request.data['room'])
+
+        if not Hospital.objects.filter(pk=request.data['hospitalId'], rooms=room).exists():
+            raise Exception(f"Комната {request.data['room']} в данной больнице не найдена")
+
         time_table = TimeTable.objects.get(pk=id)
 
-        hospitalId, doctorId, date_from, date_to, room = check_valid_data_for_time_table(request=request)
+        time_table.id_room.timetables.remove(time_table)
 
+        hospitalId, doctorId, date_from, date_to, room = check_valid_data_for_time_table(request=request)
         if not check_date(time_from=date_from, time_to=date_to):
             return Response({
                 "DATE_ERROR": "Запись на прием не была обновлена. Пожалуйста, убедитесь, что вы не пытаетсь обновить запись на число, которое уже занято"
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        time_table.hospitalId=hospitalId
-        time_table.doctorId=doctorId
+        time_table.hospitalId=Hospital.objects.get(pk=hospitalId)
+        time_table.doctorId=MyUser.objects.get(pk=doctorId)
         time_table.date_from=date_from
         time_table.date_to=date_to
-        time_table.room=room
+        time_table.id_room=Room.objects.get(room=room)
+
+        Room.objects.get(room=time_table.id_room).timetables.remove(time_table)
+
+        room = Room.objects.get(room=room)
+        room.timetables.add(time_table)
 
         time_table.save()
 
         return Response({
-            f"{time_table.room}": f"Запись успешно была обновлена"
+            f"{time_table.id_room}": f"Запись успешно была обновлена"
         }, status=status.HTTP_200_OK)
     
-    except:
+    except Exception as e:
+        print(e)
         return Response({
-            "SERVER_ERROR": "Расписание не было обнавлено. Пожалуйста, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
+            "SERVER_ERROR": f"Расписание не было обнавлено!"
         }, status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -188,4 +162,85 @@ def delete_time_table(id: int) -> Response:
     except:
         return Response({
             "SERVER_ERROR": "Расписание не было Удалено. Пожалуйста, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+
+def get_appointment(id: int) -> Response:
+    try:
+        response = {}
+        appointments = Appointment.objects.all()
+
+        if appointments.exists():
+            for i in range(len(appointments)):
+                response[f"Талончик {i+1}"] = appointments[i].time
+
+        else:
+            return Response({
+                "WARNING": "Талончиков еще нет!"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "Рассписание": response
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        print(e)
+        return Response({
+            "SERVER_ERROR": "Запись с расписанием не найдена!"
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+
+def create_appointment(request: Request, timetable_id: int) -> Response:
+    try:
+        time_tables = TimeTable.objects.filter(pk=timetable_id)
+        time_table = time_tables[0]
+
+        if not time_tables.exists():
+            raise Exception(f"Расписание с id {timetable_id} не найдено")
+
+        appointments = Appointment.objects.all()
+
+        if appointments.exists():
+            for i in range(len(appointments)):
+                if appointments[i].time == datetime.fromisoformat(request.data['time']):
+                    raise Exception(f"Запись на этот час уже существует")
+            
+        if not time_table.date_from <= datetime.fromisoformat(request.data['time']) <= time_table.date_to:
+            raise Exception(f"Запись на этот час не может быть создана. Она находится за диапазоном дат")
+
+
+        appointment = Appointment.objects.create(
+            time=request.data['time']
+        )
+
+        user = MyUser.objects.get(username=request.user)
+        user.appointments.add(appointment)
+        user.save()
+
+        time_table.appointments.add(appointment)
+        time_table.save()
+
+        return Response({
+            "SERVER": "Запись успешно добавлена"
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        print(e)
+        return Response({
+            "SERVER_ERROR": f"Запись не была добавлена! {e}"
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+
+def delete_appointment(id: int) -> Response:
+    try:
+        appointment = Appointment.objects.get(pk=id)
+        appointment.delete()
+
+        return Response({
+            "SERVRER": "Запись была успешно удалена"
+        })
+
+    except:
+        return Response({
+            "SERVER_ERROR": "Запись не была удалена. Скорее всего, такой записи нет"
         }, status=status.HTTP_400_BAD_REQUEST)

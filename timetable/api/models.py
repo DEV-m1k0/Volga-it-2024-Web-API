@@ -20,6 +20,16 @@ CHOICES_ROLE_FOR_MYUSER = [
 ROLES = ['Admin', 'Manager', 'Doctor', 'User']
 
 
+class Appointment(models.Model):
+    """
+    #### Модель для хранения информации о приёмах.
+    """
+    time = models.DateTimeField()
+
+    def __str__(self) -> str:
+        return f"{self.time}"
+
+
 class Role(models.Model):
     """
     #### Модель для хранения ролей пользователей.
@@ -29,6 +39,25 @@ class Role(models.Model):
     def __str__(self) -> str:
         return str(self.role)
 
+
+class Room(models.Model):
+    room = models.CharField(max_length=50, unique=True)
+    hospitals = models.ManyToManyField('Hospital', blank=True)
+    id_timetable = models.ForeignKey('TimeTable', on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self) -> str:
+        return str(self.room)
+
+class Hospital(models.Model):
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=100)
+    contactPhone = models.CharField(max_length=11)
+    rooms = models.ManyToManyField(Room, blank=True)
+    timetables = models.ManyToManyField('TimeTable', blank=True)
+
+    def __str__(self) -> str:
+        return str(self.name)
+    
 
 class MyUser(AbstractUser):
     """
@@ -41,46 +70,20 @@ class MyUser(AbstractUser):
     </ul>
     """
 
-    lastName = models.CharField(max_length=30)
-    firstName = models.CharField(max_length=30)
     roles = models.ManyToManyField(Role, blank=True, serialize=True)
+    appointments = models.ManyToManyField(Appointment, blank=True)
 
     def __str__(self) -> str:
         return str(self.username)
 
-
-    @property
-    def get_full_name(self) -> str:
-        """
-        #### Свойство, возвращающее полное имя пользователя.
-        """
-        return f"{self.lastName} {self.firstName}"
-
-
-class Room(models.Model):
-    room = models.CharField(max_length=50, unique=True)
-
-    def __str__(self) -> str:
-        return str(self.room)
     
-
 class TimeTable(models.Model):
-    hospitalId = models.PositiveIntegerField()
-    doctorId = models.PositiveIntegerField()
+    hospitalId = models.ForeignKey(Hospital, blank=True, on_delete=models.CASCADE)
+    doctorId = models.ForeignKey(MyUser, blank=True, on_delete=models.CASCADE)
     date_from = models.DateTimeField()
     date_to = models.DateTimeField()
-    room = models.CharField(max_length=50)
+    id_room = models.ForeignKey(Room, blank=True, null=True, on_delete=models.CASCADE)
+    appointments = models.ManyToManyField(Appointment, blank=True)
 
     def __str__(self) -> str:
         return f"from: {self.date_from} to: {self.date_to}"
-    
-
-class Hospital(models.Model):
-    name = models.CharField(max_length=100)
-    address = models.CharField(max_length=100)
-    contactPhone = models.CharField(max_length=11)
-    rooms = models.ManyToManyField(Room, blank=True)
-    timetables = models.ManyToManyField(TimeTable, blank=True)
-
-    def __str__(self) -> str:
-        return str(self.name)

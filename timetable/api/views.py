@@ -1,5 +1,5 @@
 from typing import Any
-from .permissions import AdminOrManagerPermission
+from .permissions import *
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework import permissions
@@ -27,7 +27,19 @@ class TimeTableAPIView(APIView):
     
 
 class TimeTableByDoctorAPIVIew(APIView):
-    permission_classes = [AdminOrManagerPermission]
+    permission_classes = []
+
+    def despatch(self, request, *args, **kwargs):
+        if request.method == 'GET':
+            self.permission_classes = [permissions.IsAuthenticated]
+        elif request.method == 'DELETE':
+            self.permission_classes = [AdminOrManagerPermission]
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request: Request, id: int):
+        response = time_table_doctor.get_timetable(request, id)
+        return response
+
     def delete(self, request: Request, id: int):
         response = time_table_doctor.delete_time_table(id)
         return response
@@ -49,4 +61,30 @@ class TimeTableByHospitalAPIView(APIView):
     
     def get(self, request: Request, id: int):
         response = time_table_hospital.get_timetable(request, id)
+        return response
+    
+
+class TimeTableByRoomAPIView(APIView):
+    permission_classes = [AdminOrManagerOrDoctorPermission]
+    def get(self, request: Request, id: int, room: str):
+        response = time_table_hospital.get_timetable_by_room(request, id, room)
+        return response
+    
+class AppointmentsByTimetableAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request: Request, id: int):
+        response = time_table.get_appointment(id)
+        return response
+    
+    def post(self, request: Request, id: int):
+        response = time_table.create_appointment(request, id)
+        return response
+    
+
+class DeleteAppointmentByIdAPIView(APIView):
+    permission_classes = [AdminOrManagerOrPacientPermission]
+
+    def delete(self, request: Request, id: int):
+        response = time_table.delete_appointment(id)
         return response

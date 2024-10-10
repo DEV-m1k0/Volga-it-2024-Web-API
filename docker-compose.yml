@@ -11,22 +11,6 @@ services:
       POSTGRES_HOST: postgres-db
       POSTGRES_PORT: 5432
 
-  hospital:
-    depends_on:
-      - postgres-db
-    build:
-      context: ./hospital
-    container_name: hospital
-    ports:
-      - 8002:8000
-    environment:
-      DEBUG: True
-      DB_NAME: api_hospital
-      DB_USER: postgres
-      DB_PASSWORD: postgres1234
-      DB_HOST: postgres-db
-      DB_PORT: 5432
-
   account:
     depends_on:
       - postgres-db
@@ -43,6 +27,22 @@ services:
       DB_HOST: postgres-db
       DB_PORT: 5432
 
+  hospital:
+    depends_on:
+      - postgres-db
+    build:
+      context: ./hospital
+    container_name: hospital
+    ports:
+      - 8002:8000
+    environment:
+      DEBUG: True
+      DB_NAME: api_hospital
+      DB_USER: postgres
+      DB_PASSWORD: postgres1234
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+
   timetable:
     depends_on:
       - postgres-db
@@ -51,6 +51,22 @@ services:
     container_name: timetable
     ports:
       - 8003:8000
+    environment:
+      DEBUG: True
+      DB_NAME: api_hospital
+      DB_USER: postgres
+      DB_PASSWORD: postgres1234
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+
+  document:
+    depends_on:
+      - postgres-db
+    build:
+      context: ./document
+    container_name: document
+    ports:
+      - 8004:8000
     environment:
       DEBUG: True
       DB_NAME: api_hospital
