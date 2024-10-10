@@ -4,9 +4,9 @@
 
 2. Hospital URL: http://localhost:8002/api/swagger/
 
-3. Timetable URL: http://localhost:8083/ui-swagger
+3. Timetable URL: http://localhost:8003/api/swagger
 
-4. Document URL: http://localhost:8084/ui-swagger
+4. Document URL: http://localhost:8004/api/swagger
 
 # Дополнительное задание:
 
@@ -51,7 +51,6 @@
 			"from": "string(ISO8601)",
 			"to": "string(ISO8601)"
 		},
-		. . .
 	}
 }
 ```
@@ -71,7 +70,6 @@
         "from": "string(ISO8601)",
         "to": "string(ISO8601)"
     },
-	. . .
 }
 ```
 

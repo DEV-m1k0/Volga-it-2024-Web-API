@@ -87,3 +87,18 @@ class TimeTable(models.Model):
 
     def __str__(self) -> str:
         return f"from: {self.date_from} to: {self.date_to}"
+
+
+class History(models.Model):
+    date = models.DateTimeField()
+    pacientId = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='pacient_history')
+    hospitalId = models.ForeignKey(Hospital, on_delete=models.CASCADE, related_name="hospital_history")
+    doctorId = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="doctor_history")
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="room_history")
+    data = models.TextField(max_length=200)
+
+    def __str__(self) -> str:
+        if str(self.pacientId.get_full_name()):
+            return f"История: {str(self.pacientId.get_full_name())}"
+        
+        return f"История: {self.pacientId.username}"
