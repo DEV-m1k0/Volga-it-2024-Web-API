@@ -112,8 +112,8 @@ def get_info(user: MyUser):
         pass
 
     return Response({
-        "lastName": str(user.lastName),
-        "firstName": str(user.firstName),
+        "lastName": str(user.last_name),
+        "firstName": str(user.first_name),
         "username": str(user.username),
         "roles": role_list
         })

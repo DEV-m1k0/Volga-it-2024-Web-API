@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, mixins
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.request import Request
@@ -227,9 +227,12 @@ class MyUserMeAPIView(APIView):
 
         return response
     
+from .serializers import MyUserUpdateSerializer
+from rest_framework import viewsets
+from rest_framework.decorators import action
 
 # LINK /api/Accounts/Update/
-class UpdateMeAPIView(APIView):
+class UpdateMeAPIView(viewsets.ViewSet):
     """
     ### Класс для изменения информации текущего авторизованного пользователя
     <p>Класс доступен только <strong><u>авторизованным пользователям.</u></strong></p>
@@ -239,8 +242,12 @@ class UpdateMeAPIView(APIView):
     </ul>
     """
 
+    queryset = MyUser.objects.all()
+    serializer_class = MyUserUpdateSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
+
+    @action(methods=['PUT'], detail=False, url_path='Update')    
     def put(self, request: Request):
         """
         ### PUT запрос для UpdateMeAPIView
