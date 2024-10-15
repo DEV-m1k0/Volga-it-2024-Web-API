@@ -73,6 +73,8 @@ class MyUser(AbstractUser):
     roles = models.ManyToManyField(Role, blank=True, serialize=True)
     appointments = models.ManyToManyField(Appointment, blank=True)
     history = models.ManyToManyField("History", blank=True)
+    firstName = models.CharField(max_length=100)
+    lastName = models.CharField(max_length=100)
 
     def __str__(self) -> str:
         return str(self.username)
