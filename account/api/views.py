@@ -5,17 +5,23 @@ from rest_framework.request import Request, HttpRequest
 from rest_framework import status
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 from .logic.users import add_users
+from rest_framework import generics
+from .models import MyUser
+from .serializers import *
 
 
 #SECTION - Регистрация пользователей и получение токенов
 
 
 # LINK /api/Authentication/SignUp/
-class SignUpAPIView(APIView):
+class SignUpAPIView(generics.CreateAPIView):
     """
     ### Класс для регистрации пользователей
     """
-    def post(self, request: Request):
+    queryset = MyUser.objects.all()
+    serializer_class = SignUpSerializer
+
+    def create(self, request: Request):
         """
         ### POST запрос для класса SignUpAPIView.
         <p>Если данные корректны, добавляет нового пользователя в БД.</p>

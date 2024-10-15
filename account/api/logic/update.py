@@ -25,8 +25,8 @@ def update(user: MyUser, data) -> dict:
     try:
         response = {}
 
-        user.last_name=data['lastName']
-        user.first_name=data['firstName']
+        user.lastName=data['lastName']
+        user.firstName=data['firstName']
 
         try:
             user.username=data['username']
