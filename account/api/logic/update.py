@@ -27,7 +27,11 @@ def update(user: MyUser, data) -> dict:
 
         user.last_name=data['lastName']
         user.first_name=data['firstName']
-        user.username=data['username']
+
+        try:
+            user.username=data['username']
+        except:
+            pass
 
         user.set_password(data['password'])
 
@@ -43,7 +47,7 @@ def update(user: MyUser, data) -> dict:
                     response["messages"] = response_from_roles
 
         except:
-            pass
+            response["messages"] = "Роли не были добавлены"
 
         return response
     

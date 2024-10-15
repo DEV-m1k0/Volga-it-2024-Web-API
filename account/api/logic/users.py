@@ -45,8 +45,8 @@ def add_one_user(user: MyUser, validated_data: dict):
         response = {}
 
         user = user.objects.create(
-             last_name=validated_data['lastName'],
-             first_name=validated_data['firstName'],
+             lastName=validated_data['lastName'],
+             firstName=validated_data['firstName'],
              username=validated_data['username']
              )
 
@@ -112,8 +112,8 @@ def get_info(user: MyUser):
         pass
 
     return Response({
-        "lastName": str(user.lastName),
-        "firstName": str(user.firstName),
+        "lastName": str(user.last_name),
+        "firstName": str(user.first_name),
         "username": str(user.username),
         "roles": role_list
         })

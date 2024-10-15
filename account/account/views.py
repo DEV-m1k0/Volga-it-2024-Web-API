@@ -1,12 +1,16 @@
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, mixins
 from rest_framework.response import Response
-from rest_framework import permissions
+from . import permissions
 from rest_framework.request import Request
 from django.http import HttpRequest
 from api.models import MyUser
 from api.logic.users import *
 from api.logic.update import update_user
+from .serializers import *
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework import generics
 
 
 
@@ -15,26 +19,16 @@ from api.logic.update import update_user
 
 
 # LINK /api/Accounts/{id}/
-class MyUserIdAPIView(APIView):
+class MyUserByIdAPI(generics.UpdateAPIView, generics.DestroyAPIView):
     """
-    ### Класс для обновления пользователей по id.
+    ### Класс для работы с пользователем по id.
     <p>Данный класс доступен только администраторам.</p>
-    <p>Если пользователь без прав администратора попробует получить доступ к данному функционалу, ему сервер вернет:</p>
-    ```
-    {
-        "detail": "У вас недостаточно прав для выполнения данного действия."
-    }
-    ```
-    В классе присутствуют следующие методы:
-    <ul>
-        <li>PUT</li>
-        <li>DELETE</li>
-    </ul>
     """
-
+    queryset = MyUser.objects.all()
+    serializer_class = MyUserSerializer
     permission_classes = [permissions.IsAdminUser, ]
 
-    def put(self, request: HttpRequest, id: int):
+    def update(self, request: HttpRequest, id: int):
         """
         ### PUT запрос для класса MyUserIdAPIView.
         <p>Используется для изменения информации о пользователе.</p>
@@ -66,9 +60,8 @@ class MyUserIdAPIView(APIView):
         response = update_user(request=request, id=id)
 
         return response
-    
 
-    def delete(self, request: HttpRequest, id: int):
+    def destroy(self, request: HttpRequest, id: int):
         """
         ### DELETE запрос для класса MyUserIdAPIView.
         <p>Используется для удаления пользователя.</p>
@@ -91,23 +84,17 @@ class MyUserIdAPIView(APIView):
 
         return response
 
-
-
 # LINK /api/Accounts/
-class MyUserAPIView(APIView):
+class MyUserAPI(generics.ListCreateAPIView):
     """
     ### Класс для вывода количества всех пользователей.
     <p>Данный класс доступен только администраторам.</p>
-    В данном классе реализованы следующие методы:
-    <ul>
-        <li>GET</li>
-        <li>POST</li>
-    </ul>
     """
-
+    queryset = MyUser.objects.all()
+    serializer_class = MyUserSerializer
     permission_classes = [permissions.IsAdminUser,]
 
-    def get(self, request: HttpRequest):
+    def list(self, request: HttpRequest):
         """
         ### GET запрос для класса MyUserAPIView
         <p>Если вы пытаетесь получить доступ через аккаунт, у которого нет прав администратора, то будет получен следующий ответ:</p>
@@ -135,18 +122,17 @@ class MyUserAPIView(APIView):
 
         # проверка пользователей
         if MyUser.objects.all():
-            return Response({
+            return Response([{
                 "from": MyUser.objects.all()[0].pk,
                 "count": len(MyUser.objects.all())
-                }, status=status.HTTP_200_OK)
+                }], status=status.HTTP_200_OK)
         
         else:
             return Response(data={
                 "WARNING": "Пользователей еще нет!"
                 }, status=status.HTTP_404_NOT_FOUND)
         
-
-    def post(self, request: HttpRequest):
+    def create(self, request: HttpRequest):
         """
         ### POST запрос для класса MyUserAPIView
         Данный метод поддержит обработку POST запроса для добавления одного или нескольких пользователей.
@@ -188,8 +174,10 @@ class MyUserAPIView(APIView):
         return response
     
 
+from rest_framework import generics
+
 # LINK /api/Accounts/Me/
-class MyUserMeAPIView(APIView):
+class MyUserMeAPIView(generics.ListAPIView):
     """
     ### Класс для вывода информации о текущем авторизованном пользователе
     <p>Класс доступен только <strong><u>авторизованным пользователям.</u></strong></p>
@@ -198,9 +186,11 @@ class MyUserMeAPIView(APIView):
         <li>GET</li>
     </ul>
     """
+    queryset = MyUser.objects.all()
+    serializer_class = GetInfoUsersSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
-    def get(self, request: HttpRequest):
+    def list(self, request: HttpRequest):
         """
         ### GET запрос для MyUserMeAPIView
         <hr>
@@ -226,10 +216,11 @@ class MyUserMeAPIView(APIView):
         response = get_info(user=user)
 
         return response
-    
+
+
 
 # LINK /api/Accounts/Update/
-class UpdateMeAPIView(APIView):
+class UpdateMeAPIView(generics.UpdateAPIView):
     """
     ### Класс для изменения информации текущего авторизованного пользователя
     <p>Класс доступен только <strong><u>авторизованным пользователям.</u></strong></p>
@@ -239,9 +230,12 @@ class UpdateMeAPIView(APIView):
     </ul>
     """
 
+    queryset = MyUser.objects.all()
+    serializer_class = MyUserUpdateSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
-    def put(self, request: Request):
+
+    def update(self, request: Request):
         """
         ### PUT запрос для UpdateMeAPIView
         <p>Метод принимает json с новыми данными пользователя и сохраняет их в БД.</p>
@@ -278,7 +272,7 @@ class UpdateMeAPIView(APIView):
 
 
 # LINK /api/Doctors/
-class DoctorsAPIView(APIView):
+class DoctorsAPIView(generics.ListAPIView):
     """
     ### Класс для вывода списка всех докторов.
     <p>Класс доступен только авторизованным пользователям.</p>
@@ -288,9 +282,11 @@ class DoctorsAPIView(APIView):
     </ul>
     """
 
+    queryset = MyUser.objects.all()
+    serializer_class = GetDoctorsSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
-    def get(self, request: Request):
+    def list(self, request: Request):
         """
         ### GET запрос для DoctorsAPIView.
         <p>При вызове данного метода, если пользователи с ролью 'Doctor' будут найдены, то сервер вернет:</p>
@@ -314,7 +310,7 @@ class DoctorsAPIView(APIView):
     
 
 # LINK /api/Doctors/{id}/
-class DoctorIdAPIView(APIView):
+class DoctorIdAPIView(generics.ListAPIView):
     """
     ### Класс для получения информации о докторе по ID.
     <p>Данный класс доступен только для авторизованных пользователей</p>
@@ -323,7 +319,12 @@ class DoctorIdAPIView(APIView):
         <li>GET</li>
     </ul>
     """
-    def get(self, request: Request, id: int):
+
+    queryset = MyUser.objects.all()
+    serializer_class = MyUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def list(self, request: Request, id: int):
         """
         ### GET запрос для DoctorIdAPIView.
         <p>В данном методе мы получаем ID доктора. Если доктор с таким ID существует, то сервер возваращает:</p>

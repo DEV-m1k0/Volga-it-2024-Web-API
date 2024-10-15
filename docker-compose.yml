@@ -4,12 +4,40 @@ services:
     container_name: postgres15
     ports:
       - 5434:5432
+    volumes:
+      - pg-data:/usr/share/postgres/data
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres1234
       POSTGRES_DB: api_hospital
       POSTGRES_HOST: postgres-db
       POSTGRES_PORT: 5432
+
+  es01:
+    image: elasticsearch:8.15.2
+    depends_on:
+      - postgres-db
+    container_name: es01
+    ports:
+      - 9200:9200
+    volumes:
+      - es-data-es01:/usr/share/elasticsearch/data
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: false
+
+  kibana:
+    depends_on:
+      - es01
+    image: kibana:7.17.24
+    ports:
+      - 5601:5601
+    volumes:
+      - kibana:/usr/share/kibana/data
+    environment:
+      SERVER_NAME: kibana
+      server.host: localhost
+      ELASTICSEARCH_HOSTS: http://es01:9200
 
   account:
     depends_on:
@@ -74,3 +102,8 @@ services:
       DB_PASSWORD: postgres1234
       DB_HOST: postgres-db
       DB_PORT: 5432
+
+volumes:
+  pg-data:
+  es-data-es01:
+  kibana:

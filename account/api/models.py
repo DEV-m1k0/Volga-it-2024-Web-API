@@ -57,11 +57,16 @@ class MyUser(AbstractUser):
         <li>roles</li>
     </ul>
     """
-
+    firstName = models.CharField(max_length=100, null=True, blank=True)
+    lastName = models.CharField(max_length=100, null=True, blank=True)
     roles = models.ManyToManyField(Role, blank=True, serialize=True)
 
     def __str__(self) -> str:
         return str(self.username)
+    
+    @property
+    def get_full_name(self) -> str:
+        return f"{self.firstName} {self.lastName}"
 
     
 class TimeTable(models.Model):

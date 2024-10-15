@@ -6,9 +6,9 @@ from .views import ResetTokenAPIView, ValidateTokenAPIView
 
 
 urlpatterns = [
-    path('SignUp/', SignUpAPIView.as_view()),
-    path('SignIn/', TokenObtainPairView.as_view()),
-    path('SignOut/', ResetTokenAPIView.as_view()),
-    path('Validate/', ValidateTokenAPIView.as_view()),
-    path('Refresh/', TokenRefreshView.as_view())
+    path('SignUp', SignUpAPIView.as_view()),
+    path('SignIn', TokenObtainPairView.as_view()),
+    path('SignOut', ResetTokenAPIView.as_view()),
+    path('Validate', ValidateTokenAPIView.as_view()),
+    path('Refresh', TokenRefreshView.as_view())
 ]
