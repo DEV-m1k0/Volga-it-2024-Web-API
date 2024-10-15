@@ -5,7 +5,7 @@ ADD . /app/
 
 RUN pip install -r requirements.txt
 
-CMD sleep 5 \
+CMD sleep 10 \
     && python manage.py makemigrations \
     && python manage.py migrate \
     && python manage.py add_roles \

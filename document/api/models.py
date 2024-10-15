@@ -43,7 +43,7 @@ class Role(models.Model):
 class Room(models.Model):
     room = models.CharField(max_length=50, unique=True)
     hospitals = models.ManyToManyField('Hospital', blank=True)
-    id_timetable = models.ForeignKey('TimeTable', on_delete=models.CASCADE, blank=True, null=True)
+    timetables = models.ManyToManyField('TimeTable', blank=True)
 
     def __str__(self) -> str:
         return str(self.room)
@@ -73,9 +73,15 @@ class MyUser(AbstractUser):
     roles = models.ManyToManyField(Role, blank=True, serialize=True)
     appointments = models.ManyToManyField(Appointment, blank=True)
     history = models.ManyToManyField("History", blank=True)
+    firstName = models.CharField(max_length=100)
+    lastName = models.CharField(max_length=100)
 
     def __str__(self) -> str:
         return str(self.username)
+    
+    @property
+    def get_full_name(self) -> str:
+        return f"{self.firstName} {self.lastName}"
 
     
 class TimeTable(models.Model):
@@ -88,7 +94,7 @@ class TimeTable(models.Model):
 
     def __str__(self) -> str:
         return f"from: {self.date_from} to: {self.date_to}"
-
+    
 
 class History(models.Model):
     date = models.DateTimeField()

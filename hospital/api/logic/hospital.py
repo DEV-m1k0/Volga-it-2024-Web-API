@@ -73,15 +73,15 @@ def add_hospital(data: dict, hospital: Hospital):
     response = {}
 
     try:
-        hospital = hospital.objects.create(
+        new_hospital = hospital.objects.create(
             name=data["name"],
             address=data["address"],
             contactPhone=data['contactPhone'],
         )
 
-        add_room(request_rooms=data["rooms"], hospital=hospital)
+        add_room(request_rooms=data["rooms"], hospital=new_hospital)
 
-        response[f"{hospital.name}"] = "Успешно добавлена"
+        response[f"{new_hospital.name}"] = "Успешно добавлена"
 
         return response
 
@@ -101,7 +101,7 @@ def add_room(request_rooms: list, hospital: Hospital):
         room = Room.objects.create(
             room=str(new_room)
         )
-        room.id_hospital = hospital
+        room.hospitals.add(hospital)
         room.save()
         rooms.append(room)
 
