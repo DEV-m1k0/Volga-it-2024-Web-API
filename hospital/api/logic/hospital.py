@@ -101,7 +101,7 @@ def add_room(request_rooms: list, hospital: Hospital):
         room = Room.objects.create(
             room=str(new_room)
         )
-        room.id_hospital = hospital
+        room.id_hospital.add(hospital)
         room.save()
         rooms.append(room)
 

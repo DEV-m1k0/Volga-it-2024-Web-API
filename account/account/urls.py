@@ -32,7 +32,7 @@ urlpatterns = [
     path('api/Accounts', MyUserAPI.as_view()),
     path('api/Accounts/<int:id>', MyUserByIdAPI.as_view()),
     path('api/Authentication/', include('api.urls')),
-    path("api/Doctors/", DoctorsAPIView.as_view()),
+    path("api/Doctors", DoctorsAPIView.as_view()),
     path("api/Doctors/<int:id>", DoctorIdAPIView.as_view()),
     # Swagger UI
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
