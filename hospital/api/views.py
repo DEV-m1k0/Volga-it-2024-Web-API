@@ -27,14 +27,8 @@ class HospitalsAPIView(generics.ListCreateAPIView):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request: Request, id: int = False):
-
-        if id:
-            response = get_info_by_id(request=request, id=id)
-            return response
-        
-        else:
-            response = get_all(request=request)
-            return response
+        response = get_all(request=request)
+        return response
         
     def post(self, request: Request):
 
@@ -43,11 +37,25 @@ class HospitalsAPIView(generics.ListCreateAPIView):
         return response
 
 
-class HospitalByIdAPIView(generics.RetrieveUpdateDestroyAPIView):
+class HospitalByIdAPIView(generics.RetrieveUpdateDestroyAPIView, generics.ListAPIView):
 
     queryset = Hospital.objects.all()
     serializer_class = serializers.HospitalSerializer
     permission_classes = [permissions.IsAdminUser]
+
+    def dispatch(self, request, *args, **kwargs):
+
+        if request.method == 'GET':
+            self.permission_classes = [permissions.IsAuthenticated]
+        elif request.method == 'PUT' or request.method == 'DELETE':
+            self.permission_classes = [permissions.IsAdminUser]
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, id, *args, **kwargs):
+        response = get_info_by_id(request=request, id=id)
+        return response
+
     def delete(self, request: Request, id: int):
 
         response = delete_hospital_by_id(request=request, id=id)
@@ -55,7 +63,7 @@ class HospitalByIdAPIView(generics.RetrieveUpdateDestroyAPIView):
         return response
     
     def put(self, request: Request, id: int):
-
+        # FIXME нужно удалять у комнаты больницу, к которой она прикреплена, если при обнавлении она убирается
         response = update_hospital_by_id(request=request, id=id)
 
         return response
