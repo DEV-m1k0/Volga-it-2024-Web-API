@@ -137,7 +137,7 @@ def update_time_table(request: Request, id: int) -> Response:
                 "DATE_ERROR": "Запись на прием не была обновлена. Скорее всего, на этот прием записаны пользователи!"
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        time_table.room.timetables = None
+        time_table.room.timetable = None
         time_table.room.save()
 
         time_table.hospitalId=Hospital.objects.get(pk=hospitalId)
@@ -148,7 +148,7 @@ def update_time_table(request: Request, id: int) -> Response:
         time_table.save()
 
         room = Room.objects.get(room=room)
-        room.timetables = time_table
+        room.timetable = time_table
         room.save()
 
 
