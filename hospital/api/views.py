@@ -41,7 +41,7 @@ class HospitalByIdAPIView(generics.RetrieveUpdateDestroyAPIView, generics.ListAP
 
     queryset = Hospital.objects.all()
     serializer_class = serializers.HospitalSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = []
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -70,6 +70,7 @@ class HospitalByIdAPIView(generics.RetrieveUpdateDestroyAPIView, generics.ListAP
 
 
 class RoomsByIdAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     def get(self, request: Request, id: int):
         hospital = Hospital.objects.get(pk=id)
         rooms = get_rooms(hospital=hospital)
