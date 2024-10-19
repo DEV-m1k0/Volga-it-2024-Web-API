@@ -123,7 +123,7 @@ class MyUserAPI(generics.ListCreateAPIView):
         # проверка пользователей
         if MyUser.objects.all():
             return Response([{
-                "from": MyUser.objects.all()[0].pk,
+                "from": MyUser.objects.all().order_by('pk')[0].pk,
                 "count": len(MyUser.objects.all())
                 }], status=status.HTTP_200_OK)
         
@@ -305,7 +305,7 @@ class DoctorsAPIView(generics.ListAPIView):
         }
         ```
         """
-        response = filter_users(request=request, user_role='Doctor')
+        response = get_all_doctors()
         return response
     
 

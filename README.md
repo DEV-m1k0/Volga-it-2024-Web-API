@@ -17,7 +17,7 @@
 # Информация от участника
 ## Об особенностях данных json при отправке на сервер
 
-### 1) POST /api/Authentication/Refresh/
+### 1) POST /api/Authentication/Refresh
 Для данного URL POST запрос должен выглядеть следующим образом:
 ```json 
 {

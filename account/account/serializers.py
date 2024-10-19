@@ -66,13 +66,11 @@ class PostUserSerializer(serializers.ModelSerializer):
 
 
 class MyUserUpdateSerializer(serializers.ModelSerializer):
-    roles = serializers.ListField()
     class Meta:
         model = MyUser
-        fields = ['lastName', 'firstName', 'password', 'roles']
+        fields = ['lastName', 'firstName', 'password']
         extra_kwargs = {
             'lastName': {'required': True},
             'firstName': {'required': True},
             'password': {'required': True, 'write_only': True},
-            'roles': {'required': False}
         }
