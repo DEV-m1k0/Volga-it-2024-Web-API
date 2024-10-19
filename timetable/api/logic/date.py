@@ -45,6 +45,18 @@ def parse_date(request_from: str, request_to: str):
     return False
 
 
+def check_date_for_room_update(room: Room):
+    try:
+        tt_room: TimeTable = room.timetable
+
+        if tt_room.appointments.all().exists():
+            return False
+            
+        return True
+    except Exception as e:
+        print(e)
+        return True
+
 def check_date(time_from: datetime, time_to: datetime):
     time_table_all = TimeTable.objects.all()
 

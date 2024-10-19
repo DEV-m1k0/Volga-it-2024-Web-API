@@ -51,6 +51,7 @@ def add_one_user(user: MyUser, validated_data: dict):
              )
 
         user.set_password(validated_data['password'])
+        user.roles.add(Role.objects.get(role='User'))
 
         user.save()
     

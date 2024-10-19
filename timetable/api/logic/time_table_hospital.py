@@ -23,22 +23,18 @@ def delete(request: HttpRequest, id: int):
 def get_timetable(request: HttpRequest, id: int):
     try:
         hospital = Hospital.objects.get(pk=id)
-        list_dates = time_to_iso8601_from_db(hospital.timetables.all())
+        list_dates = time_to_iso8601_from_db([hospital.timetable])
 
         response = {}
 
-        for id_date in range(1, len(list_dates)+1):
-            time_table = list_dates[id_date-1]
-            response[id_date] = {
-                                "from": f"{time_table[0]}",
-                                "to": f"{time_table[1]}"
-                                }
+        for date in list_dates:
+            response['from'] = date[0]
+            response['to'] = date[1]
 
-        return Response({
-            f"{hospital.name}": response
-        }, status=status.HTTP_200_OK)
+        return Response(data=response, status=status.HTTP_200_OK)
     except Exception as e:
-        return Response({"status": f"{e}"})
+        print(e)
+        return Response({"SERVER": "Скорее всего, у госпиталя еще нет расписания"})
     
 
 def get_timetable_by_room(request: HttpRequest, id: int, room: str):
@@ -48,29 +44,19 @@ def get_timetable_by_room(request: HttpRequest, id: int, room: str):
         get_room = Room.objects.get(room=room)
         hospital = Hospital.objects.get(pk=id)
 
-        print(get_room)
-        print(hospital)
-
         if not get_room in hospital.rooms.all():
             return Response({
                 "SERVER_ERROR": f"Комната: {room} не принадлежит больнице!"
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
-        list_dates = time_to_iso8601_from_db([get_room.id_timetable])
+        list_dates = time_to_iso8601_from_db([get_room.timetable])
 
-        print(list_dates)
+        for date in list_dates:
+            response['from'] = date[0]
+            response['to'] = date[1]
 
-        for id_date in range(1, len(list_dates)+1):
-            time_table = list_dates[id_date-1]
-            response[f'{id_date}'] = {
-                                "from": f"{time_table[0]}",
-                                "to": f"{time_table[1]}"
-                                }
-
-        return Response({
-            f"{hospital.name}": {f"{get_room.room}": response}
-        }, status=status.HTTP_200_OK)
+        return Response(data=response, status=status.HTTP_200_OK)
     
     except Exception as e:
         print(e)
