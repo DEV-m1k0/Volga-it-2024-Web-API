@@ -86,12 +86,11 @@ def get_history(id):
     try:
         history = History.objects.get(pk=id)
         return Response({
-            "id": history.pk,
+            "date": history.date,
             "pacientId": history.pacientId.pk,
             "hospitalId": history.hospitalId.pk,
             "doctorId": history.doctorId.pk,
             "room": history.room.room,
-            "date": history.date,
             "data": history.data,
         }, status=status.HTTP_200_OK)
     except Exception as e:
@@ -107,7 +106,7 @@ def post_history(request: Request):
         
         answer_validate_user = validate_data.validate_pacient(request.data['pacientId'], response_parsed_date[1])
         if not answer_validate_user:
-            raise Exception('Пациент с таким ID не найден или у данного пациента не было записи на данное время')
+            raise Exception('Пациент с таким ID не найден или у данного доктора нет на данное время расписания')
 
         answer_check_hospital = validate_data.check_hospital(request.data['hospitalId'])
         if not answer_check_hospital:

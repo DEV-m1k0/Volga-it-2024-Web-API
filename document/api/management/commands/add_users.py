@@ -15,6 +15,8 @@ class Command(BaseCommand):
                     email='admin@example.com',
                     is_superuser=True,
                     is_staff=True,
+                    lastName="Adminovich",
+                    firstName="Admin"
                 )
                 admin.password = make_password('admin')  # Hash password before saving it in database.
                 admin.roles.add(Role.objects.get(role='Admin'))
@@ -25,6 +27,8 @@ class Command(BaseCommand):
                     email='manager@example.com',
                     is_superuser=False,
                     is_staff=False,
+                    lastName="Managerovich",
+                    firstName="Manager"
                     )
                 manager.password = make_password('manager')  # Hash password before saving it in database.
                 manager.roles.add(Role.objects.get(role='Manager'))
@@ -35,6 +39,8 @@ class Command(BaseCommand):
                     email='doctor@example.com',
                     is_superuser=False,
                     is_staff=False,
+                    lastName="Doctorovich",
+                    firstName="Doctor"
                     )
                 doctor.password = make_password('doctor')  # Hash password before saving it in database.
                 doctor.roles.add(Role.objects.get(role='Doctor'))
@@ -45,6 +51,8 @@ class Command(BaseCommand):
                     email='user@example.com',
                     is_superuser=False,
                     is_staff=False,
+                    lastName="Userovich",
+                    firstName="User"
                 )
                 user.password = make_password('user')  # Hash password before saving it in database.
                 user.roles.add(Role.objects.get(role='User'))
