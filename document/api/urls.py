@@ -1,5 +1,14 @@
+
+
+
+# SECTION - Навигация по микросервису Document
+
+
+
 from django.urls import path
 from . import views
+
+
 
 urlpatterns = [
     path('History/Account/<int:id>', views.HistoryPacientAPIView.as_view()),

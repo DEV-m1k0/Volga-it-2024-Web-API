@@ -10,6 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+
+# SECTION - Настройки микросервиса Document
+
+
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -43,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Компоненты для работы с микросервиса
+    # Компоненты для работы микросервиса
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',

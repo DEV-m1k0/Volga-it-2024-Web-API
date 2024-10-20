@@ -1,3 +1,10 @@
+
+
+
+# SECTION - Бизнес логика для работы с историями пользователей для микросервиса Document
+
+
+
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.request import Request
@@ -9,13 +16,11 @@ def put_history(request: Request, id: int):
     try:
         response = {}
         history: History = History.objects.get(pk=id)
-
         data = request.data
-
         response_parsed_date = date.parse_one_date(request.data['date'])
         if not response_parsed_date[0]:
             raise Exception('Неправильный формат даты')
-        
+
         answer_validate_user = validate_data.validate_pacient(request.data['pacientId'], response_parsed_date[1])
         if not answer_validate_user:
             raise Exception('Пациент с таким ID не найден или у данного пациента не было записи на данное время')
@@ -51,21 +56,21 @@ def put_history(request: Request, id: int):
         }
 
         return Response({"Измененная запись": response}, status=status.HTTP_200_OK)
+
     except Exception as e:
         print(e)
         return Response({"ERROR": f"{e}"}, status=status.HTTP_404_NOT_FOUND)
 
+
 def get_history_by_pacient(id):
     try:
         response = {}
-
         pacient = MyUser.objects.get(pk=id)
         answer_pacient = validate_data.check_pacient(id)
         if not answer_pacient:
             return Response({f"Пользователь: {pacient.get_full_name()}": "Данный пользователь не является пациентом, так как у него нет активных записей на прием!"}, status=status.HTTP_404_NOT_FOUND)
         
         historys = History.objects.filter(pacientId=pacient).order_by('-date')
-
         for i in range(len(historys)):
             response[f'{i+1}'] = {
                 "id": historys[i].pk,
@@ -78,13 +83,16 @@ def get_history_by_pacient(id):
             }
 
         return Response({f"История: {pacient.get_full_name()}": response}, status=status.HTTP_200_OK)
+
     except Exception as e:
         print(e)
         return Response({"error": "История пациента с таким ID не найдена"}, status=status.HTTP_404_NOT_FOUND)
 
+
 def get_history(id):
     try:
         history = History.objects.get(pk=id)
+
         return Response({
             "date": history.date,
             "pacientId": history.pacientId.pk,
@@ -93,13 +101,14 @@ def get_history(id):
             "room": history.room.room,
             "data": history.data,
         }, status=status.HTTP_200_OK)
+
     except Exception as e:
         print(e)
         return Response({"error": "История с таким ID не найдена"}, status=status.HTTP_404_NOT_FOUND)
 
+
 def post_history(request: Request):
     try:
-
         response_parsed_date = date.parse_one_date(request.data['date'])
         if not response_parsed_date[0]:
             raise Exception('Неправильный формат даты')

@@ -1,4 +1,13 @@
+
+
+
+# SECTION - Права доступа для микросервиса Document
+
+
+
 from rest_framework.permissions import BasePermission
+
+
 
 class AdminOrManagerOrDoctorPermission(BasePermission):
     message = "Этот класс доступен только для администраторов, менеджеров и врачей."
@@ -13,6 +22,7 @@ class AdminOrManagerOrDoctorPermission(BasePermission):
         
     def has_permission(self, request, view):
         return self.has_object_permission(request, view, None)
+    
     
 
 class DoctorOrPacientPermission(BasePermission):

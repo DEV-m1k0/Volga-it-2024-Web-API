@@ -1,9 +1,16 @@
+
+
+
+# SECTION - Сериализаторы для микросервиса Document
+
+
+
 from rest_framework import serializers
 from .models import *
 
 
-class HistorySerializer(serializers.ModelSerializer):
 
+class HistorySerializer(serializers.ModelSerializer):
     room = serializers.CharField(max_length=100)
 
     class Meta:
@@ -19,8 +26,8 @@ class HistorySerializer(serializers.ModelSerializer):
         }
 
 
-class HistoryAccountByIdSerializer(serializers.ModelSerializer):
 
+class HistoryAccountByIdSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=100)
     roles = serializers.ListField()
 

@@ -1,4 +1,10 @@
-from rest_framework.views import APIView
+
+
+
+# SECTION - Классы предстваления для микросервиса Document
+
+
+
 from rest_framework import generics
 from .logic import history
 from .permissions import *
@@ -6,7 +12,6 @@ from . import serializers
 from .models import *
 
 
-# Create your views here.
 
 class HistoryByIdAPIView(generics.ListAPIView, generics.UpdateAPIView):
     """
@@ -18,10 +23,10 @@ class HistoryByIdAPIView(generics.ListAPIView, generics.UpdateAPIView):
     permission_classes = []
 
     def dispatch(self, request, *args, **kwargs):
-        # if request.method == 'GET':
-        #     self.permission_classes = [DoctorOrPacientPermission]
-        # elif request.method == "PUT":
-        #     self.permission_classes = [AdminOrManagerOrDoctorPermission]
+        if request.method == 'GET':
+            self.permission_classes = [DoctorOrPacientPermission]
+        elif request.method == "PUT":
+            self.permission_classes = [AdminOrManagerOrDoctorPermission]
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, id):
@@ -31,6 +36,7 @@ class HistoryByIdAPIView(generics.ListAPIView, generics.UpdateAPIView):
         """
         response = history.get_history(id)
         return response
+    
     def put(self, request, id):
         """
         ### Обновление истории посещения и назначения
@@ -52,13 +58,14 @@ class HistoryByIdAPIView(generics.ListAPIView, generics.UpdateAPIView):
         return response
     
 
+
 class HistoryAPI(generics.CreateAPIView):
     """
     #### LINK: POST /api/History
     """
     queryset = History.objects.all()
     serializer_class = serializers.HistorySerializer
-    # permission_classes = [AdminOrManagerOrDoctorPermission]
+    permission_classes = [AdminOrManagerOrDoctorPermission]
     def post(self, request):
         """
         ### Создание истории посещения и назначения
@@ -85,8 +92,7 @@ class HistoryPacientAPIView(generics.ListAPIView):
     #### LINK: GET /api/History/Account/{id}
     """
     queryset = history.History.objects.all()
-    # serializer_class = serializers.HistoryAccountByIdSerializer
-    # permission_classes = [DoctorOrPacientPermission]
+    permission_classes = [DoctorOrPacientPermission]
     def get(self, request, id):
         """
         ### Получение истории посещений и назначений аккаунта

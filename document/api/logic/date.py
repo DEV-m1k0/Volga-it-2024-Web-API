@@ -1,11 +1,18 @@
+
+
+
+# SECTION - Бизнес логика для работы с датами для микросервиса Document
+
+
+
 from django.utils import timezone
-from api.models import TimeTable
 from datetime import datetime, timedelta
-from api.models import Room
+from api.models import TimeTable
+
+
 
 def time_to_iso8601_from_db(dates: list[TimeTable]) -> list[str]:
     correct_date = []
-
     for date in dates:
         date_from = str(timezone.datetime.isoformat(date.date_from)).split('+')[0]+'Z'
         date_to = str(timezone.datetime.isoformat(date.date_to)).split('+')[0]+'Z'
@@ -51,16 +58,15 @@ def parse_one_date(date: str) -> bool:
         parsed_date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%SZ')
     except ValueError:
         return [False]
-    
     # Проверка времени
     if not ((parsed_date.minute % 30 == 0) and (parsed_date.second == 0)):
         return [False]
     
     return [True, parsed_date]
 
+
 def check_date(time_from: datetime, time_to: datetime):
     time_table_all = TimeTable.objects.all()
-
     for time_table in time_table_all:
         date_from_by_db = datetime.fromisoformat(str(time_table.date_from)).astimezone(timezone.utc)
         date_to_by_db = datetime.fromisoformat(str(time_table.date_to)).astimezone(timezone.utc)
@@ -76,7 +82,6 @@ def check_date(time_from: datetime, time_to: datetime):
 def get_appointments(datetime_from: datetime, datetime_to: datetime) -> list[datetime]:
     list_appointments = []
     time_appointment = datetime_from
-
     while time_appointment <= datetime_to:
         list_appointments.append(time_appointment)
         time_appointment += timedelta(minutes=30)
