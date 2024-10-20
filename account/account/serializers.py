@@ -2,6 +2,11 @@ from rest_framework import serializers
 from api.models import *
 
 
+
+# SECTION Сериализаторы для микросервиса Account
+
+
+
 class UpdateUserByIdSerializer(serializers.ModelSerializer):
 
     username = serializers.CharField(max_length=100)
@@ -12,15 +17,19 @@ class UpdateUserByIdSerializer(serializers.ModelSerializer):
         fields = ['lastName', 'firstName', 'username', 'password', 'roles']
 
 
+
 class GetUsersSerializer(serializers.Serializer):
     From = serializers.IntegerField()
     count = serializers.IntegerField()
+
 
 
 class GetDoctorsSerializer(serializers.Serializer):
     nameFilter = serializers.CharField(max_length=100)
     From = serializers.IntegerField()
     count = serializers.IntegerField()
+
+
 
 class GetInfoUsersSerializer(serializers.ModelSerializer):
 
@@ -30,6 +39,7 @@ class GetInfoUsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
         fields = ['lastName', 'firstName', 'username', 'roles']
+
 
 
 class MyUserSerializer(serializers.ModelSerializer):
@@ -49,6 +59,7 @@ class MyUserSerializer(serializers.ModelSerializer):
         }
 
 
+
 class PostUserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=100)
     roles = serializers.PrimaryKeyRelatedField(many=True, queryset=Role.objects.all())
@@ -63,6 +74,7 @@ class PostUserSerializer(serializers.ModelSerializer):
             'password': {'required': True, 'write_only': True},
             'roles': {'required': False}
         }
+
 
 
 class MyUserUpdateSerializer(serializers.ModelSerializer):

@@ -1,15 +1,16 @@
-# SECTION - Бизнес логика для добавления ролей из микросервиса account
+
+
+
+# SECTION - Бизнес логика для добавления ролей из микросервиса Account
+
 
 
 from typing import Any
 from api.models import CHOICES_ROLE_FOR_MYUSER, MyUser, Role
 
 
-# NOTE - функция для добавления роли
+
 def add_role(user: MyUser, validate_data: dict[str, Any]):
-    """
-    Добавления роли
-    """
 
     check_role = _role_is_exist(validate_data['roles'])
 
@@ -29,7 +30,6 @@ def add_role(user: MyUser, validate_data: dict[str, Any]):
     return response
 
 
-# NOTE - функция для проверки существования роли
 def _role_is_exist(roles: list[str]) -> bool:
     try:
         roles_count = len(roles)

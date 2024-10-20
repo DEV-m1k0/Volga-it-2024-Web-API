@@ -1,6 +1,10 @@
 from rest_framework.permissions import BasePermission, IsAuthenticated
-
 from api.models import MyUser
+
+
+
+# SECTION Права доступа для микросервиса 'Account'
+
 
 
 class IsAdminUser(BasePermission):

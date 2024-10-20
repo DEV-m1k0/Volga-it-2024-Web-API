@@ -10,6 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+
+# SECTION Настройки для микросервиса 'Account'
+
+
 from pathlib import Path
 import datetime
 import os
@@ -138,27 +142,8 @@ WSGI_APPLICATION = 'account.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': "api_hospital",
-#         'USER': "postgres",
-#         'PASSWORD': "postgres1234",
-#         'HOST': "postgres-db",
-#         'PORT': "5432"
-#     }
-# }
-
-
-
-# NOTE - Настройка базы данных для использования в docker
+# NOTE - Настройка базы данных
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',

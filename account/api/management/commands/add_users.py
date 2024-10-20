@@ -1,3 +1,12 @@
+
+
+
+# SECTION - Добавление базовых пользователей
+# NOTE Команда для добавления ролей(MacOS): python3 ./manage.py add_users
+# NOTE Команда для добавления ролей(Windows): python ./manage.py add_users
+
+
+
 from django.core.management.base import BaseCommand
 from django.contrib.auth.hashers import make_password
 from api.models import MyUser, Role
@@ -16,7 +25,7 @@ class Command(BaseCommand):
                     is_superuser=True,
                     is_staff=True,
                 )
-                admin.password = make_password('admin')  # Hash password before saving it in database.
+                admin.password = make_password('admin')
                 admin.roles.add(Role.objects.get(role='Admin'))
                 admin.save()
 
@@ -26,7 +35,7 @@ class Command(BaseCommand):
                     is_superuser=False,
                     is_staff=False,
                     )
-                manager.password = make_password('manager')  # Hash password before saving it in database.
+                manager.password = make_password('manager')
                 manager.roles.add(Role.objects.get(role='Manager'))
                 manager.save()
 
@@ -36,7 +45,7 @@ class Command(BaseCommand):
                     is_superuser=False,
                     is_staff=False,
                     )
-                doctor.password = make_password('doctor')  # Hash password before saving it in database.
+                doctor.password = make_password('doctor')
                 doctor.roles.add(Role.objects.get(role='Doctor'))
                 doctor.save()    
             
@@ -46,15 +55,13 @@ class Command(BaseCommand):
                     is_superuser=False,
                     is_staff=False,
                 )
-                user.password = make_password('user')  # Hash password before saving it in database.
+                user.password = make_password('user')
                 user.roles.add(Role.objects.get(role='User'))
                 user.save()
 
                 self.stdout.write(self.style.SUCCESS('Базовые пользователи успешно созданы'))
-
             else:
                 self.stdout.write(self.style.WARNING('Пользователи уже существуют или роли не созданы'))
-
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'Ошибка при создании базовых пользователей: {str(e)}'))

@@ -1,28 +1,19 @@
-from rest_framework.views import APIView
-from rest_framework import status, mixins
+from rest_framework import status, generics
 from rest_framework.response import Response
-from . import permissions
 from rest_framework.request import Request
 from django.http import HttpRequest
 from api.models import MyUser
 from api.logic.users import *
 from api.logic.update import update_user
 from .serializers import *
-from rest_framework import viewsets
-from rest_framework.decorators import action
-from rest_framework import generics
+from . import permissions
 
 
 
-# SECTION Обработка аккаунтов и все, что с ними связано
-
-
-
-# LINK /api/Accounts/{id}/
 class MyUserByIdAPI(generics.UpdateAPIView, generics.DestroyAPIView):
     """
-    ### Класс для работы с пользователем по id.
-    <p>Данный класс доступен только администраторам.</p>
+    #### LINK: PUT /api/Accounts/{id}
+    #### LINK: DELETE /api/Accounts/{id}
     """
     queryset = MyUser.objects.all()
     serializer_class = MyUserSerializer
@@ -30,31 +21,20 @@ class MyUserByIdAPI(generics.UpdateAPIView, generics.DestroyAPIView):
 
     def update(self, request: HttpRequest, id: int):
         """
-        ### PUT запрос для класса MyUserIdAPIView.
-        <p>Используется для изменения информации о пользователе.</p>
-        <p>Если данные будут валиндны, тогда сервер вернет:</p>
+        ### Изменение администратором аккаунта по id
+        **body:**
         ```
         {
-            "username": "Успешно обновлен"
+            "lastName": "string",
+            "firstName": "string",
+            "username": "string", //имя пользователя
+            "password": "string", //пароль
+            "roles": [
+                "string" //массив ролей пользователя
+            ]
         }
         ```
-        <hr>
-        <p>Если в json будут некорректные роли, а все остальные данные будут валидны, тогда сервер вернет:</p>
-        ```
-        {
-            "username": "Успешно обновлен",
-            "messages": {
-                "username": "Роли не были добавлены. Убедитесь в корректности введенных ролей"
-            }
-        }
-        ```
-        <hr>
-        <p>Если в синтаксисе json будет ошибка, то сервер вернет следующий ответ:</p>
-        ```
-        {
-            "ERROR_username": "Пользователь не был обновлен. Пожалуйста, проверьте корректность json"
-        }
-        ```
+        **ограничения:** Только администраторы
         """
 
         response = update_user(request=request, id=id)
@@ -63,32 +43,20 @@ class MyUserByIdAPI(generics.UpdateAPIView, generics.DestroyAPIView):
 
     def destroy(self, request: HttpRequest, id: int):
         """
-        ### DELETE запрос для класса MyUserIdAPIView.
-        <p>Используется для удаления пользователя.</p>
-        <p>Если пользователь будет успешно удален, сервер вернет:</p>
-        ```
-        {
-            "username": "Успешно удален"
-        }
-        ```
-        <hr>
-        <p>Если пользователь не найден, то сервер вернет:</p>
-        ```
-        {
-            "SERVER_NOT_FOUND": "Пользователь не найден"
-        }
-        ```
+        ### Мягкое удаление аккаунта по id
+        **ограничения:** Только администраторы
         """
 
         response = delete(request=request, id=id)
 
         return response
 
-# LINK /api/Accounts/
+
+
 class MyUserAPI(generics.ListCreateAPIView):
     """
-    ### Класс для вывода количества всех пользователей.
-    <p>Данный класс доступен только администраторам.</p>
+    #### LINK: GET /api/Accounts
+    #### LINK: POST /api/Accounts
     """
     queryset = MyUser.objects.all()
     serializer_class = MyUserSerializer
@@ -96,28 +64,15 @@ class MyUserAPI(generics.ListCreateAPIView):
 
     def list(self, request: HttpRequest):
         """
-        ### GET запрос для класса MyUserAPIView
-        <p>Если вы пытаетесь получить доступ через аккаунт, у которого нет прав администратора, то будет получен следующий ответ:</p>
+        ### Получение списка всех аккаунтов
+        **параметры:**
         ```
         {
-            "detail": "У вас недостаточно прав для выполнения данного действия."
+            "from": "int", //Начало выборки
+            "count": "int" //Размер выборки
         }
         ```
-        <hr>
-        <p>Если пользователи есть, то возварщает следующий ответ:</p>
-        ```
-        {
-            "from": "id 1-ого пользователя"
-            "count": "Количество всех пользователей"
-        }
-        ```
-        <hr>
-        <p>Если пользователей нет, то возварщает следующий ответ:</p>
-        ```
-        {
-            "WARNING": "Пользователей еще нет!"
-        }
-        ```
+        **ограничения:** Только администраторы
         """
 
         # проверка пользователей
@@ -134,39 +89,20 @@ class MyUserAPI(generics.ListCreateAPIView):
         
     def create(self, request: HttpRequest):
         """
-        ### POST запрос для класса MyUserAPIView
-        Данный метод поддержит обработку POST запроса для добавления одного или нескольких пользователей.
-        <p>Если json отправлен корректный, то получим ответ в формате:</p>
+        ### Создание администратором нового аккаунта
+        **body:**
         ```
         {
-          "username": "Пользователь успешно добавлен"
+            "lastName": "string",
+            "firstName": "string",
+            "username": "string", //имя пользователя
+            "password": "string", //пароль
+            "roles": [
+                "string" //массив ролей пользователя
+            ]
         }
         ```
-        <hr>
-        <p>Если в json будет ошибка связанная с неверными ролями, то пользователь добавится,
-        но роли не применятся и сервер к ответу добавит еще сообщение следующего формата:</p>
-        ```
-        {
-            "username": "Пользователь успешно добавлен",
-            "messages": {
-                "username": "Роли не были добавлены. Убедитесь в корректности введенных ролей"
-            }
-        }
-        ```
-        <hr>
-        <p>Если в синтаксисе json будет ошибка, то сервер вернет следующее сообщение:</p>
-        ```
-        {
-            "DATA_ERROR": "Данные некорректны. Пожалуйста, убедитесь, что json корректен!"
-        }
-        ```
-        <hr>
-        <p>Если вы попытаетесь добавить пользователя с пустым паролем, то сервер вернет следующий результат:</p>
-        ```
-        {
-            "username_PASSWORD_ERROR": "Пароль не может быть пустым!"
-        }
-        ```
+        **ограничения:** Только администраторы
         """
         
         # формирование ответа
@@ -174,17 +110,10 @@ class MyUserAPI(generics.ListCreateAPIView):
         return response
     
 
-from rest_framework import generics
 
-# LINK /api/Accounts/Me/
 class MyUserMeAPIView(generics.ListAPIView):
     """
-    ### Класс для вывода информации о текущем авторизованном пользователе
-    <p>Класс доступен только <strong><u>авторизованным пользователям.</u></strong></p>
-    В классе реализованы следующии функции:
-    <ul>
-        <li>GET</li>
-    </ul>
+    ### LINK: GET /api/Accounts/Me
     """
     queryset = MyUser.objects.all()
     serializer_class = GetInfoUsersSerializer
@@ -192,24 +121,8 @@ class MyUserMeAPIView(generics.ListAPIView):
 
     def list(self, request: HttpRequest):
         """
-        ### GET запрос для MyUserMeAPIView
-        <hr>
-        <p>Если пользователь есть, то возварщает следующий <strong>GET</strong>:</p>
-        ```
-        {
-            "lastName": "string",
-            "firstName": "string",
-            "username": "string",
-            "roles": ["string"]
-        }
-        ```
-        <hr>
-        <p>Если пользователь не авторизован, то возварщает следующий <strong>GET</strong>:</p>
-        ```
-        {
-            "ERROR_ROLE": "Ошибка при получении ролей"
-        }
-        ```
+        ### Получение данных о текущем аккаунте
+        **ограничения:** Только авторизованные пользователи
         """
         user: MyUser = request.user
 
@@ -219,15 +132,9 @@ class MyUserMeAPIView(generics.ListAPIView):
 
 
 
-# LINK /api/Accounts/Update/
 class UpdateMeAPIView(generics.UpdateAPIView):
     """
-    ### Класс для изменения информации текущего авторизованного пользователя
-    <p>Класс доступен только <strong><u>авторизованным пользователям.</u></strong></p>
-    В классе реализованы следующие методы:
-    <ul>
-        <li>PUT</li>
-    </ul>
+    ### LINK: PUT /api/Accounts/Update
     """
 
     queryset = MyUser.objects.all()
@@ -237,9 +144,8 @@ class UpdateMeAPIView(generics.UpdateAPIView):
 
     def update(self, request: Request):
         """
-        ### PUT запрос для UpdateMeAPIView
-        <p>Метод принимает json с новыми данными пользователя и сохраняет их в БД.</p>
-        Поддерживается следующий формат json:
+        ### Обновление своего аккаунта
+        **body:**
         ```
         {
             "lastName": "string",
@@ -247,18 +153,7 @@ class UpdateMeAPIView(generics.UpdateAPIView):
             "password": "string"
         }
         ```
-        <p>Если данные корректны, то возвращает следующий ответ:</p>
-        ```
-        {
-            "username": "Успешно обновлен"
-        }        
-        ```
-        <p>Если данные не корректны, то будет возвращено следующие искючение:</p>
-        ```
-        {
-            "username": "Пользователь не был обновлен. Пожалуйста, проверьте корректность json"
-        }
-        ```
+        **ограничения:** Только авторизованные пользователи
         """
 
         response = update_user(request)
@@ -267,19 +162,9 @@ class UpdateMeAPIView(generics.UpdateAPIView):
     
 
 
-
-# SECTION для работы с докторами
-
-
-# LINK /api/Doctors/
 class DoctorsAPIView(generics.ListAPIView):
     """
-    ### Класс для вывода списка всех докторов.
-    <p>Класс доступен только авторизованным пользователям.</p>
-    В данном классе реализованы следующие методы:
-    <ul>
-        <li>GET</li>
-    </ul>
+    #### LINK: GET /api/Doctors
     """
 
     queryset = MyUser.objects.all()
@@ -288,36 +173,25 @@ class DoctorsAPIView(generics.ListAPIView):
 
     def list(self, request: Request):
         """
-        ### GET запрос для DoctorsAPIView.
-        <p>При вызове данного метода, если пользователи с ролью 'Doctor' будут найдены, то сервер вернет:</p>
+        ### Получение списка докторов
+        **параметры:**
         ```
         {
-            "nameFilter": "Полное имя первого найденного доктора",
-            "from": "ID первого доктора",
-            "count": "Количество всех докторов"
+            "nameFilter": "string" //Фильтр имени (FullName LIKE ‘%{na meFilter}%’)
+            "from": "int" //Начало выборки
+            "count": "int" //Размер выборки
         }
         ```
-        <hr>
-        <p>Если пользователей с ролью 'Doctor' не будет, то сервер вернет:</p>
-        ```
-        {
-            "SERVER_NOT_FOUND": "Сервер не нашел пользователей с данной ролью. Скорее всего, пользователь с такой ролью не существует."
-        }
-        ```
+        **ограничения:** Только авторизованные пользователи
         """
         response = get_all_doctors()
         return response
     
 
-# LINK /api/Doctors/{id}/
+
 class DoctorIdAPIView(generics.ListAPIView):
     """
-    ### Класс для получения информации о докторе по ID.
-    <p>Данный класс доступен только для авторизованных пользователей</p>
-    <p>В класс реализованы следующие методы:</p>
-    <ul>
-        <li>GET</li>
-    </ul>
+    #### LINK: GET /api/Doctors/{id}
     """
 
     queryset = MyUser.objects.all()
@@ -326,26 +200,8 @@ class DoctorIdAPIView(generics.ListAPIView):
 
     def list(self, request: Request, id: int):
         """
-        ### GET запрос для DoctorIdAPIView.
-        <p>В данном методе мы получаем ID доктора. Если доктор с таким ID существует, то сервер возваращает:</p>
-        ```
-        {
-            "lastName": "string",
-            "firstName": "string",
-            "username": "string",
-            "roles": [
-                "string",
-                ...,
-                "string",
-            ]
-        }
-        ```
-        <p>Если доктора с таким ID не существует, тогда сервер возвращает:</p>
-        ```
-        {
-            "ERROR_ROLE": "Ошибка при получении ролей. Скорее всего, доктора с таким ID не существует."
-        }
-        ```
+        ### Получение информации о докторе по Id
+        **ограничения:** Только авторизованные пользователи
         """
         
         try:

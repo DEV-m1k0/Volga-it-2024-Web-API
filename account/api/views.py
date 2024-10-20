@@ -16,20 +16,15 @@ from .serializers import *
 # LINK /api/Authentication/SignUp/
 class SignUpAPIView(generics.CreateAPIView):
     """
-    ### Класс для регистрации пользователей
+    #### LINK: POST /api/Authentication/SignUp
     """
     queryset = MyUser.objects.all()
     serializer_class = SignUpSerializer
 
     def create(self, request: Request):
         """
-        ### POST запрос для класса SignUpAPIView.
-        <p>Если данные корректны, добавляет нового пользователя в БД.</p>
-        <p>Если данные некорректны, возвращает ошибку с описанием причины ошибки.</p>
-        <p>Формат json запроса: POST /api/Authentication/SignUp/ может принимать как list так и dict с полями: lastName, firstName, username, password.</p>
-        <hr>
-        <p>Пример допустимых форматов json:</p>
-        <h3>dict:</h3>
+        ### Регистрация нового аккаунта
+        **body:**
         ```
         {
             "lastName": "string",
@@ -38,24 +33,7 @@ class SignUpAPIView(generics.CreateAPIView):
             "password": "string"
         }
         ```
-        <br>
-        <h3>list:</h3>
-        ```
-        [
-            {
-                "lastName": "string",
-                "firstName": "string",
-                "username": "string",
-                "password": "string"
-            },
-            {
-                "lastName": "string",
-                "firstName": "string",
-                "username": "string",
-                "password": "string"
-            }
-        ]
-        ```
+        **ограничения:** Нет
         """
 
         response = add_users(request)
@@ -66,17 +44,18 @@ class SignUpAPIView(generics.CreateAPIView):
 # LINK /api/Authentication/Validate/
 class ValidateTokenAPIView(APIView):
     """
-    ### Класс для интроспекции токена
-    В классе реализованы следующие методы:
-    <ul>
-        <li>GET</li>
-    </ul>
+    #### GET /api/Authentication/Validate
     """
     def get(self, request: Request):
         """
-        ### GET запрос для класса ValidateTokenAPIView
-        Если токен активен, возвращает его.\n
-        Если токен не активен, возвращает исключение.
+        ### Интроспекция токена
+        **параметры:**
+        ```
+        {
+            "accessToken": "string"
+        }
+        ```
+        **ограничения:** Нет
         """
         try:
             token = request.headers.get('Authorization').split(' ')[1]  # Достаем токен из заголовка
@@ -85,27 +64,16 @@ class ValidateTokenAPIView(APIView):
             return Response({"TOKEN_ERROR": f"Токен не активен: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
     
 
-
-#SECTION - Занесение токенов в BlackList
-
-
-
-# LINK /api/Authentication/SignOut/
 class ResetTokenAPIView(APIView):
     """
-    ### Класс для сброса токенов
-    <p>Этот класс доступен только для авторизованных пользователей.</p>
-    В классе реализованы следующие методы:
-    <ul>
-        <li>PUT</li>
-    </ul>
+    #### LINK: PUT /api/Authentication/SignOut
     """
     permission_classes = [permissions.IsAuthenticated, ]
 
     def put(self, request: HttpRequest):
         """
-        ### PUT запрос для класса ResetTokenAPIView
-        <p>Сбрасывает все токены пользователя в черный список.</p>
+        ### Выход из аккаунта
+        **ограничения:** Только авторизованные пользователи
         """
         tokens = OutstandingToken.objects.filter(user_id=request.user.id)
         user = request.user

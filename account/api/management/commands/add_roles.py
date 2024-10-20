@@ -1,6 +1,17 @@
+
+
+
+# SECTION - Добавление ролей
+# NOTE Команда для добавления ролей(MacOS): python3 ./manage.py add_roles
+# NOTE Команда для добавления ролей(Windows): python ./manage.py add_roles
+
+
+
 from typing import Any
 from django.core.management.base import BaseCommand
 from api.models import Role
+
+
 
 class Command(BaseCommand):
     help = 'Create main roles'
