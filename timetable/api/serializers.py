@@ -1,5 +1,13 @@
+
+
+
+# SECTION - Сериализаторы для микросервиса Timetable
+
+
+
 from rest_framework import serializers
 from .models import *
+
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
@@ -11,6 +19,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
         }
 
 
+
 class MyUserTimeTableSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeTable
@@ -19,6 +28,7 @@ class MyUserTimeTableSerializer(serializers.ModelSerializer):
             'date_from': {'required': True},
             'date_to': {'required': True},
         }
+
 
 
 class TimeTableSerializer(serializers.ModelSerializer):

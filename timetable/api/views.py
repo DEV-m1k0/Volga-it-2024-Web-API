@@ -1,15 +1,19 @@
-from typing import Any
-from .permissions import *
+
+
+
+# SECTION - Классы представления для микросервиса Timetable
+
+
+
 from rest_framework.request import Request
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.views import APIView
+from .permissions import *
 from .logic import time_table, time_table_doctor, time_table_hospital
 from .serializers import *
 from .models import *
 
-
-# Create your views here.
 
 
 class TimeTableAPIView(generics.CreateAPIView):
