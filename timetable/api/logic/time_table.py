@@ -2,8 +2,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
 from api.models import *
-from .date import (check_date, parse_date, time_to_iso8601_from_db,
-                   get_appointments, time_to_iso8601)
+from .date import *
 from datetime import datetime
 
 
@@ -12,9 +11,17 @@ def create_time_table(request: Request):
         
         hospitalId, doctorId, date_from, date_to, room = check_valid_data_for_time_table(request=request)
 
-        if not check_date(date_from, date_to):
+        rooms_from_hospital = Hospital.objects.get(pk=hospitalId).rooms.all()
+        if not rooms_from_hospital.filter(room=room).exists():
             return Response({
-                "SERVER_ERROR": "Некорректные даты!"
+                "SERVER_ERROR": f"Комната: {room} не принадлежит больнице!"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+
+        doctor = MyUser.objects.get(pk=doctorId)
+        if doctor.time_table:
+            return Response({
+                "SERVER_ERROR": f"Доктор: {doctor.username} уже имеет расписание!"
             }, status=status.HTTP_400_BAD_REQUEST)
 
         time_table = TimeTable.objects.create(
@@ -22,15 +29,20 @@ def create_time_table(request: Request):
             doctorId=MyUser.objects.get(pk=doctorId),
             date_from=date_from,
             date_to=date_to,
-            id_room=Room.objects.get(room=room)
+            room=Room.objects.get(room=room)
         )
-
-        hospital = Hospital.objects.get(pk=hospitalId)
-        hospital.timetables.add(time_table)
-        hospital.save()
+        time_table.save()
 
         room = Room.objects.get(room=room)
-        room.timetables.add(time_table)
+        room.timetable = time_table
+        room.save()
+
+        doctor.time_table = time_table
+        doctor.save()
+
+        hospital = time_table.hospitalId
+        hospital.timetable = time_table
+        hospital.save()
 
         return Response({
             "server": "Запись успешно добавлена"
@@ -51,7 +63,7 @@ def check_valid_data_for_time_table(request: Request):
         if check_doctor_by_id(id=request.data["doctorId"]):
             doctorlId = request.data["doctorId"]
 
-        answer, from_dt, to_dt = parse_date(request.data['from'], request.data['to'])
+        answer, from_dt, to_dt = parse_date(request.data['date_from'], request.data['date_to'])
         if answer:
             date_from = from_dt
             date_to = to_dt
@@ -61,7 +73,8 @@ def check_valid_data_for_time_table(request: Request):
 
         return hospitalId, doctorlId, date_from, date_to, room
 
-    except:
+    except Exception as e:
+        print(e)
         return False
     
 
@@ -110,37 +123,37 @@ def check_doctor_by_id(id: int) -> bool:
 
 def update_time_table(request: Request, id: int) -> Response:
     try:
-
         room = Room.objects.get(room=request.data['room'])
 
         if not Hospital.objects.filter(pk=request.data['hospitalId'], rooms=room).exists():
             raise Exception(f"Комната {request.data['room']} в данной больнице не найдена")
 
         time_table = TimeTable.objects.get(pk=id)
+        old_room = time_table.room
 
-        time_table.id_room.timetables.remove(time_table)
-
-        hospitalId, doctorId, date_from, date_to, room = check_valid_data_for_time_table(request=request)
-        if not check_date(time_from=date_from, time_to=date_to):
+        hospitalId, doctorId, date_from, date_to, str_room = check_valid_data_for_time_table(request=request)
+        if not check_date_for_room_update(room=old_room):
             return Response({
-                "DATE_ERROR": "Запись на прием не была обновлена. Пожалуйста, убедитесь, что вы не пытаетсь обновить запись на число, которое уже занято"
+                "DATE_ERROR": "Запись на прием не была обновлена. Скорее всего, на этот прием записаны пользователи!"
             }, status=status.HTTP_400_BAD_REQUEST)
+        
+        time_table.room.timetable = None
+        time_table.room.save()
 
         time_table.hospitalId=Hospital.objects.get(pk=hospitalId)
         time_table.doctorId=MyUser.objects.get(pk=doctorId)
         time_table.date_from=date_from
         time_table.date_to=date_to
-        time_table.id_room=Room.objects.get(room=room)
-
-        Room.objects.get(room=time_table.id_room).timetables.remove(time_table)
-
-        room = Room.objects.get(room=room)
-        room.timetables.add(time_table)
-
+        time_table.room=Room.objects.get(room=room)
         time_table.save()
 
+        room = Room.objects.get(room=room)
+        room.timetable = time_table
+        room.save()
+
+
         return Response({
-            f"{time_table.id_room}": f"Запись успешно была обновлена"
+            f"{time_table.room}": f"Запись успешно была обновлена"
         }, status=status.HTTP_200_OK)
     
     except Exception as e:
@@ -161,7 +174,7 @@ def delete_time_table(id: int) -> Response:
 
     except:
         return Response({
-            "SERVER_ERROR": "Расписание не было Удалено. Пожалуйста, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
+            "SERVER_ERROR": "Расписание не было Удалено."
         }, status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -213,7 +226,7 @@ def create_appointment(request: Request, timetable_id: int) -> Response:
             time=request.data['time']
         )
 
-        user = MyUser.objects.get(username=request.user)
+        user = MyUser.objects.get(pk=request.user.pk)
         user.appointments.add(appointment)
         user.save()
 

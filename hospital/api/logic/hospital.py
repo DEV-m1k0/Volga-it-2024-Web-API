@@ -106,11 +106,17 @@ def add_room(request_rooms: list, hospital: Hospital):
         rooms.append(room)
 
     for room_has in has:
+        room = Room.objects.get(
+            room=room_has
+        )
+        room.hospitals.add(hospital)
+        room.save()
         rooms.append(Room.objects.get(
             room=room_has
         ))
 
     hospital.rooms.set(rooms)
+    
 
 
 def check_rooms(rooms: list):
@@ -143,6 +149,12 @@ def update_hospital_by_id(request: Request, id: int):
         hospital.name = request.data['name']
         hospital.address = request.data['address']
         hospital.contactPhone = request.data['contactPhone']
+
+        rooms: list[Room] = hospital.rooms.all()
+
+        for room in rooms:
+            room.hospitals.clear()
+            room.save()
 
         hospital.save()
 

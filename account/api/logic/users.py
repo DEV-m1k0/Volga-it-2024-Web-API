@@ -51,6 +51,7 @@ def add_one_user(user: MyUser, validated_data: dict):
              )
 
         user.set_password(validated_data['password'])
+        user.roles.add(Role.objects.get(role='User'))
 
         user.save()
     
@@ -82,6 +83,20 @@ def delete(request: HttpRequest, id: int):
     
     except:
         return Response({"server": "Пользователь не найден"})
+
+
+def get_all_doctors():
+    try:
+        role_doctor = Role.objects.get(role="Doctor")
+        doctors = MyUser.objects.filter(roles=role_doctor).order_by('pk')
+        return Response({
+                "nameFilter": "Doctor",
+                "from": doctors[0].pk,
+                "count": len(doctors)
+                }, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response({"SERVER": "Ошибка при получении списка врачей"})
 
 
 def filter_users(request: request.Request, user_role: str):

@@ -42,8 +42,8 @@ class Role(models.Model):
 
 class Room(models.Model):
     room = models.CharField(max_length=50, unique=True)
-    hospitals = models.ManyToManyField('Hospital', blank=True)
-    timetables = models.ManyToManyField('TimeTable', blank=True)
+    hospitals = models.ManyToManyField('Hospital', blank=True, related_name='hospitals_room')
+    timetable = models.ForeignKey('TimeTable', blank=True, null=True, on_delete=models.SET_NULL, related_name='timetable_room')
 
     def __str__(self) -> str:
         return str(self.room)
@@ -52,8 +52,8 @@ class Hospital(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
     contactPhone = models.CharField(max_length=11)
-    rooms = models.ManyToManyField(Room, blank=True)
-    timetables = models.ManyToManyField('TimeTable', blank=True)
+    rooms = models.ManyToManyField(Room, blank=True, related_name='rooms_hospital')
+    timetable = models.ForeignKey('TimeTable', blank=True, null=True, on_delete=models.SET_NULL, related_name='timetable_hospital')
 
     def __str__(self) -> str:
         return str(self.name)
@@ -70,27 +70,27 @@ class MyUser(AbstractUser):
     </ul>
     """
 
-    roles = models.ManyToManyField(Role, blank=True, serialize=True)
-    appointments = models.ManyToManyField(Appointment, blank=True)
-    history = models.ManyToManyField("History", blank=True)
+    roles = models.ManyToManyField(Role, blank=True, serialize=True, related_name='roles_myuser')
+    appointments = models.ManyToManyField(Appointment, blank=True, related_name='appointments_myuser')
+    history = models.ManyToManyField("History", blank=True, related_name='history_myuser')
     firstName = models.CharField(max_length=100)
     lastName = models.CharField(max_length=100)
+    time_table = models.ForeignKey('TimeTable', blank=True, null=True, on_delete=models.SET_NULL, related_name='time_table_myuser')
 
     def __str__(self) -> str:
         return str(self.username)
     
-    @property
     def get_full_name(self) -> str:
         return f"{self.firstName} {self.lastName}"
 
     
 class TimeTable(models.Model):
-    hospitalId = models.ForeignKey(Hospital, blank=True, on_delete=models.CASCADE)
-    doctorId = models.ForeignKey(MyUser, blank=True, on_delete=models.CASCADE)
+    hospitalId = models.ForeignKey(Hospital, blank=True, null=True, on_delete=models.SET_NULL, related_name='hospitalId_timetable')
+    doctorId = models.ForeignKey(MyUser, blank=True, null=True, on_delete=models.SET_NULL, related_name='doctorId_timetable')
     date_from = models.DateTimeField()
     date_to = models.DateTimeField()
-    id_room = models.ForeignKey(Room, blank=True, null=True, on_delete=models.CASCADE)
-    appointments = models.ManyToManyField(Appointment, blank=True)
+    room = models.ForeignKey(Room, blank=True, null=True, on_delete=models.SET_NULL, related_name='room_timetable')
+    appointments = models.ManyToManyField(Appointment, blank=True, related_name='appointments_timetable')
 
     def __str__(self) -> str:
         return f"from: {self.date_from} to: {self.date_to}"

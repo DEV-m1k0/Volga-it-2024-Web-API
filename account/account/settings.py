@@ -145,15 +145,14 @@ WSGI_APPLICATION = 'account.wsgi.application'
 #     }
 # }
 
-# NOTE - Настройка базы данных для локального использования
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
 #         'NAME': "api_hospital",
 #         'USER': "postgres",
 #         'PASSWORD': "postgres1234",
-#         'HOST': "localhost",
-#         'PORT': "5432",
+#         'HOST': "postgres-db",
+#         'PORT': "5432"
 #     }
 # }
 
@@ -167,7 +166,7 @@ DATABASES = {
         'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
+        'PORT': os.environ.get('DB_PORT')
     }
 }
 

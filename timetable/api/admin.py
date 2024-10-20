@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TimeTable, MyUser, Role, Room, Hospital, Appointment
+from .models import *
 
 # Register your models here.
 
@@ -10,3 +10,4 @@ admin.site.register(Role)
 admin.site.register(Room)
 admin.site.register(Hospital)
 admin.site.register(Appointment)
+admin.site.register(History)
