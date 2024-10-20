@@ -1,5 +1,13 @@
+
+
+
+# SECTION - Сериализаторы для микросервиса Hospital
+
+
+
 from rest_framework import serializers
 from .models import Hospital
+
 
 
 class HospitalSerializer(serializers.ModelSerializer):

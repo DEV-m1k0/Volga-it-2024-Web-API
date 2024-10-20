@@ -1,3 +1,12 @@
+
+
+
+# SECTION - Добавление базовых пользователей
+# NOTE Команда для добавления ролей(MacOS): python3 ./manage.py add_users
+# NOTE Команда для добавления ролей(Windows): python ./manage.py add_users
+
+
+
 from django.core.management.base import BaseCommand
 from django.contrib.auth.hashers import make_password
 from api.models import MyUser, Role

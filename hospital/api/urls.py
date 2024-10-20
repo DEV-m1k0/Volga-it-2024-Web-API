@@ -1,5 +1,14 @@
+
+
+
+# SECTION - URL's для микросервиса Hospital
+
+
+
 from django.urls import path
 from .views import *
+
+
 
 urlpatterns = [
     path('Hospitals', HospitalsAPIView.as_view()),

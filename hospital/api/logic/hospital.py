@@ -1,14 +1,20 @@
+
+
+
+# SECTION - Бизнес логика для микросервиса Hospital
+
+
+
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
 from api.models import Hospital, Room
 
 
+
 def get_all(request: Request):
     hospital = Hospital.objects.all()
-    
     if hospital:
-
         hospitals_count = hospital.count()
         id = hospital[0].pk
         
@@ -40,7 +46,6 @@ def get_info_by_id(request: Request, id: int):
 
 def get_rooms(hospital: Hospital) -> list:
     rooms_list = []
-
     for room in hospital.rooms.all().values_list('room'):
         rooms_list.append(room[0])
 
@@ -49,17 +54,13 @@ def get_rooms(hospital: Hospital) -> list:
 
 def hospital_create(request: Request):
     response = {}
-
     if isinstance(request.data, dict):
         hospital = Hospital
         response.update(add_hospital(request.data, hospital=hospital))
-
     elif isinstance(request.data, list):
-
         for data in request.data:
             hospital = Hospital
             response.update(add_hospital(data, hospital))
-
     else:
         return Response({
             "SERVER_ERROR": "Не удалось добавить больницу. Пожалуйства, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
@@ -69,22 +70,18 @@ def hospital_create(request: Request):
 
 
 def add_hospital(data: dict, hospital: Hospital):
-
     response = {}
-
     try:
         new_hospital = hospital.objects.create(
             name=data["name"],
             address=data["address"],
             contactPhone=data['contactPhone'],
         )
-
         add_room(request_rooms=data["rooms"], hospital=new_hospital)
 
         response[f"{new_hospital.name}"] = "Успешно добавлена"
 
         return response
-
 
     except:
         response["SERVER_ERROR"] = "Не удалось добавить больницу. Пожалуйства, проверьте ваш json и убедитесь, что в нем нет ошибок и наименования полей верны!"
@@ -92,11 +89,8 @@ def add_hospital(data: dict, hospital: Hospital):
 
 
 def add_room(request_rooms: list, hospital: Hospital):
-
     has, has_not = check_rooms(rooms=request_rooms)
-
     rooms = []
-
     for new_room in has_not:
         room = Room.objects.create(
             room=str(new_room)
@@ -116,14 +110,11 @@ def add_room(request_rooms: list, hospital: Hospital):
         ))
 
     hospital.rooms.set(rooms)
-    
 
 
 def check_rooms(rooms: list):
     all_rooms = Room.objects.all()
-
     rooms_list = []
-
     rooms_has = []
     rooms_has_not = []
 
@@ -133,7 +124,6 @@ def check_rooms(rooms: list):
     for request_room in rooms:
         if request_room in rooms_list:
             rooms_has.append(request_room)
-
         else:
             rooms_has_not.append(request_room)
 
@@ -141,21 +131,17 @@ def check_rooms(rooms: list):
 
 
 def update_hospital_by_id(request: Request, id: int):
-
     response = {}
     hospital = Hospital.objects.get(pk=id)
-
     try:
         hospital.name = request.data['name']
         hospital.address = request.data['address']
         hospital.contactPhone = request.data['contactPhone']
-
         rooms: list[Room] = hospital.rooms.all()
 
         for room in rooms:
             room.hospitals.clear()
             room.save()
-
         hospital.save()
 
         response[f"{hospital.name}"] = "Была успешно обновлена"
@@ -171,11 +157,9 @@ def update_hospital_by_id(request: Request, id: int):
     
 
 def delete_hospital_by_id(request: Request, id: int):
-
     response = {}
     hospital = Hospital.objects.get(pk=id)
     hospital_name = hospital.name
-
     try:
         hospital.delete()
         response[f"{hospital_name}"] = "Больница была успешно удалена"

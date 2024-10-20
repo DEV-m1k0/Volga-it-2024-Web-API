@@ -1,12 +1,14 @@
+
+
+
+# SECTION - Модели проекта
+
+
+
 from django.db import models
-
-# Create your models here.
-
-
 from django.contrib.auth.models import AbstractUser
 
 
-# Create your models here.
 
 # Список ролей
 CHOICES_ROLE_FOR_MYUSER = [
@@ -17,6 +19,7 @@ CHOICES_ROLE_FOR_MYUSER = [
 ]
 
 
+# Возможные роли
 ROLES = ['Admin', 'Manager', 'Doctor', 'User']
 
 
@@ -41,6 +44,9 @@ class Role(models.Model):
 
 
 class Room(models.Model):
+    """
+    #### Модель для хранения информации о комнатах.
+    """
     room = models.CharField(max_length=50, unique=True)
     hospitals = models.ManyToManyField('Hospital', blank=True, related_name='hospitals_room')
     timetable = models.ForeignKey('TimeTable', blank=True, null=True, on_delete=models.SET_NULL, related_name='timetable_room')
@@ -49,6 +55,9 @@ class Room(models.Model):
         return str(self.room)
 
 class Hospital(models.Model):
+    """
+    #### Модель для хранения информации о больницах.
+    """
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
     contactPhone = models.CharField(max_length=11)
@@ -61,13 +70,7 @@ class Hospital(models.Model):
 
 class MyUser(AbstractUser):
     """
-    ### Основная модель пользователей.
-    Данная модель наследует от базового AbstractUser, добавляя поля:
-    <ul>
-        <li>lastName</li>
-        <li>firstName</li>
-        <li>roles</li>
-    </ul>
+    #### Основная модель для аккаунтов
     """
 
     roles = models.ManyToManyField(Role, blank=True, serialize=True, related_name='roles_myuser')
@@ -85,6 +88,9 @@ class MyUser(AbstractUser):
 
     
 class TimeTable(models.Model):
+    """
+    #### Модель для хранения расписаний
+    """
     hospitalId = models.ForeignKey(Hospital, blank=True, null=True, on_delete=models.SET_NULL, related_name='hospitalId_timetable')
     doctorId = models.ForeignKey(MyUser, blank=True, null=True, on_delete=models.SET_NULL, related_name='doctorId_timetable')
     date_from = models.DateTimeField()
@@ -97,6 +103,9 @@ class TimeTable(models.Model):
     
 
 class History(models.Model):
+    """
+    #### Модель для хранения историй
+    """
     date = models.DateTimeField()
     pacientId = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='pacient_history')
     hospitalId = models.ForeignKey(Hospital, on_delete=models.CASCADE, related_name="hospital_history")

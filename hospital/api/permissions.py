@@ -1,5 +1,11 @@
-from rest_framework.permissions import BasePermission, IsAuthenticated
 
+
+
+# SECTION - Права доступа для микросервиса Hospital
+
+
+
+from rest_framework.permissions import BasePermission, IsAuthenticated
 from api.models import MyUser
 
 
