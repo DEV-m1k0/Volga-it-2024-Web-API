@@ -14,7 +14,7 @@ services:
       POSTGRES_PORT: 5432
 
   es01:
-    image: elasticsearch:8.15.2
+    image: elasticsearch:7.17.25
     depends_on:
       - postgres-db
     container_name: es01

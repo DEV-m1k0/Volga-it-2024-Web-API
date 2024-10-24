@@ -138,7 +138,7 @@ def post_history(request: Request):
             room=room,
             data=request.data.get('data')
         )
-
+        
         pacient.history.add(history)
         pacient.save()
 

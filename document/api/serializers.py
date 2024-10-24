@@ -11,6 +11,7 @@ from .models import *
 
 
 class HistorySerializer(serializers.ModelSerializer):
+
     room = serializers.CharField(max_length=100)
 
     class Meta:
@@ -24,6 +25,7 @@ class HistorySerializer(serializers.ModelSerializer):
             'room': {'required': True},
             'data': {'required': False},
         }
+
 
 
 

@@ -52,10 +52,18 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'drf_spectacular',
+    'django_elasticsearch_dsl',
 
     # Приложения микросервиса   
     'api'
 ]
+
+
+ELASTICSEARCH_DSL={
+    'default': {
+        'hosts': 'http://es01:9200'
+    }
+}
 
 AUTH_USER_MODEL = 'api.MyUser'
 
