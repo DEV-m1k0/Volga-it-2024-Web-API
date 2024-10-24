@@ -5,6 +5,6 @@ ADD . /app/
 
 RUN pip install -r requirements.txt
 
-CMD sleep 17 && python manage.py makemigrations && python manage.py runserver 0.0.0.0:8000
+CMD sleep 19 && python manage.py makemigrations && python manage.py runserver 0.0.0.0:8000
     
 EXPOSE 8000
