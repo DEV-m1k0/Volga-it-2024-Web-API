@@ -1,7 +1,7 @@
 services:
   postgres-db:
     image: postgres:15-alpine
-    container_name: postgres15
+    container_name: postgres15-alp
     ports:
       - 5434:5432
     volumes:
@@ -13,10 +13,22 @@ services:
       POSTGRES_HOST: postgres-db
       POSTGRES_PORT: 5432
 
+  pg4:
+    depends_on:
+      - postgres-db
+    image: dpage/pgadmin4
+    ports:
+      - "81:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 'admin@localhost.com'
+      PGADMIN_DEFAULT_PASSWORD: 'admin'
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+
   es01:
     image: elasticsearch:7.17.25
     depends_on:
       - postgres-db
+      - pg4
     container_name: es01
     ports:
       - 9200:9200
@@ -28,6 +40,8 @@ services:
 
   kibana:
     depends_on:
+      - postgres-db
+      - pg4
       - es01
     image: kibana:7.17.24
     ports:
@@ -42,6 +56,8 @@ services:
   account:
     depends_on:
       - postgres-db
+      - pg4
+      - es01
     build:
       context: ./account
     container_name: account
@@ -58,6 +74,9 @@ services:
   hospital:
     depends_on:
       - postgres-db
+      - pg4
+      - es01
+      - account
     build:
       context: ./hospital
     container_name: hospital
@@ -74,6 +93,9 @@ services:
   timetable:
     depends_on:
       - postgres-db
+      - pg4
+      - es01
+      - hospital
     build:
       context: ./timetable
     container_name: timetable
@@ -90,6 +112,9 @@ services:
   document:
     depends_on:
       - postgres-db
+      - pg4
+      - es01
+      - timetable
     build:
       context: ./document
     container_name: document
